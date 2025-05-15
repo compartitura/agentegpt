@@ -5,20 +5,19 @@ const path = require("path");
 const { OpenAI } = require("openai");
 
 const app = express();
-
-// 1) Servir archivos estáticos (index.html, chatbot.js)
-app.use(express.static(path.join(__dirname)));
-
-// 2) CORS y JSON
 app.use(cors());
 app.use(bodyParser.json());
 
-// 3) Configurar OpenAI
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
+// 1) Servir archivos estáticos desde la raíz
+app.use(express.static(path.join(__dirname)));
+
+// 2) Enviar index.html para cualquier ruta (fallback)
+app.get("/*", (req, res) => {
+  res.sendFile(path.join(__dirname, "index.html"));
 });
 
-// 4) Endpoint de chat
+// 3) Endpoint de chat
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 app.post("/chat", async (req, res) => {
   const userMessage = req.body.message;
   try {
@@ -39,7 +38,7 @@ app.post("/chat", async (req, res) => {
   }
 });
 
-// 5) Iniciar servidor
+// 4) Levantar servidor
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Servidor escuchando en http://localhost:${PORT}`);

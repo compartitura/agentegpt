@@ -1,0 +1,108 @@
+<!-- Coloca esto justo antes de </body> en tu HTML -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const agentImgUrl = 'https://www.compartitura.org/medias/images/cecilia.png';
+    const attentionDelay = 3000;
+    const zBase = 2147483647;
+    const hasYouTube = !!document.querySelector('iframe[src*="youtube.com"], iframe[src*="youtu.be"]');
+    const pageTitle = document.title || '';
+
+    const style = document.createElement('style');
+    style.textContent = `
+      #soporte-agent { position: fixed; bottom: 20px; right: 20px; z-index: ${zBase}; max-width: 100%; box-sizing: border-box; }
+      #soporte-agent .agent-btn { position: relative; z-index: ${zBase}+1; width:70px; height:70px; border-radius:50%; border:4px solid #28a745; box-shadow:0 2px 8px rgba(0,0,0,0.3); cursor:pointer; overflow:hidden; background:#fff; transition:transform 0.2s ease; }
+      @keyframes pulse { 0%{transform:scale(1);box-shadow:0 0 0 0 rgba(40,167,69,0.7);} 50%{transform:scale(1.05);box-shadow:0 0 0 10px rgba(40,167,69,0);} 100%{transform:scale(1);box-shadow:0 0 0 0 rgba(40,167,69,0);} }
+      #soporte-agent .agent-btn.attention { animation:pulse 1s ease-out infinite; }
+      #soporte-agent .speech-bubble { display:none; position:absolute; bottom:90px; right:0; background:#333; color:#fff; border-radius:12px; padding:16px; box-shadow:0 4px 12px rgba(0,0,0,0.3); font-size:15px; line-height:1.4; width:280px; max-width:calc(100vw - 40px); box-sizing:border-box; transition:transform 0.2s,opacity 0.2s; z-index:${zBase}-1; }
+      #soporte-agent .speech-bubble:after { content:""; position:absolute; bottom:-10px; right:24px; border-width:10px 10px 0; border-style:solid; border-color:#333 transparent; }
+      #soporte-agent .speech-bubble .close-bubble { position:absolute; top:6px; right:8px; font-size:18px; cursor:pointer; color:#fff; }
+      #soporte-agent .opciones { display:none; position:absolute; bottom:90px; right:0; background:#333; color:#fff; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.3); list-style:none; padding:8px 0; margin:0; width:280px; max-width:calc(100vw - 40px); box-sizing:border-box; z-index:${zBase}-1; }
+      #soporte-agent.open .opciones { display:block; animation:fadeIn 0.2s ease; }
+      #soporte-agent .opciones li { border-top:1px solid #444; padding:0 16px; }
+      #soporte-agent .opciones li:first-child { border-top:none; }
+      #soporte-agent .opciones a { display:block; padding:10px 0; color:#fff; text-decoration:none; font-size:15px; transition:background 0.2s; }
+      #soporte-agent .opciones a:hover { background:#444; }
+      @keyframes fadeIn { from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:translateY(0);} }
+      .title-button { background:#28a745; color:#fff !important; padding:6px 10px; border-radius:4px; text-decoration:none !important; font-weight:bold!important; display:inline-block; margin:8px 0; }
+      #custom-message { width:100%; height:60px; border-radius:4px; border:none; padding:8px; resize:none; box-sizing:border-box; margin-top:8px; background:#444; color:#fff; }
+      #send-custom { width:100%; margin-top:8px; background:#25D366; color:#fff; border:none; border-radius:4px; padding:10px; font-size:15px; cursor:pointer; display:none; }
+      #ai-response { background:#444; color:#fff; margin-top:8px; padding:10px; border-radius:8px; max-height:200px; overflow-y:auto; font-size:14px; }
+      #chat-loader { color:#fff; margin-top:8px; }
+    `;
+    document.head.appendChild(style);
+
+    const container = document.createElement('div'); container.id = 'soporte-agent'; document.body.appendChild(container);
+    const bubble = document.createElement('div'); bubble.className = 'speech-bubble'; container.appendChild(bubble);
+    const options = document.createElement('ul'); options.className = 'opciones'; container.appendChild(options);
+
+    if (hasYouTube) {
+      const liDL = document.createElement('li');
+      liDL.innerHTML = `<a class="title-button" href="https://compartitura.synology.me:5001/?launchApp=SYNO.SDS.Drive.BasicInstance&launchParam=link%3DnwgUQBmrNijcbh9bsUSl7VU2s8kH4phx#files" target="_blank">Descargar archivos de "${pageTitle}"</a>`;
+      options.appendChild(liDL);
+    }
+
+    const links = [
+      { text: 'Activar acceso al servidor de partituras', msg: '¡Hola! Me gustaría activar el acceso al servidor de partituras.' },
+      { text: 'Renovar acceso al servidor de partituras', msg: '¡Hola! Quiero renovar el acceso al servidor de partituras.' },
+      { text: 'Necesito partituras o métodos', msg: '¡Hola! ¿Me pueden ayudar a conseguir partituras o métodos?' },
+      { text: 'Unirme a grupos para suscriptores en WhatsApp', msg: '¡Hola! Quiero unirme a los grupos para suscriptores en WhatsApp.' },
+      { text: 'Instrumentos, repuestos y accesorios', msg: '¡Hola! ¿Qué opciones tienen para instrumentos, repuestos y accesorios?' },
+      { text: 'Teoría musical, métodos, practicar', msg: '¡Hola! Busco material sobre teoría musical, métodos o ejercicios para practicar.' },
+      { text: 'Registrarte en la comunidad', msg: '¡Hola! ¿Cómo me registro en la comunidad de Compartitura?' }
+    ];
+    links.forEach(item => {
+      const li = document.createElement('li');
+      li.innerHTML = `<a href="https://api.whatsapp.com/send?phone=16465580039&text=${encodeURIComponent(item.msg)}" target="_blank">${item.text}</a>`;
+      options.appendChild(li);
+    });
+
+    const liCustom = document.createElement('li');
+    liCustom.innerHTML = `<textarea id="custom-message" placeholder="Escribe tu pregunta..."></textarea><button id="send-custom">Envía tu pregunta personalizada</button><div id="chat-loader" style="display:none;">Cargando respuesta de IA...</div><div id="ai-response"></div>`;
+    options.appendChild(liCustom);
+
+    const btn = document.createElement('div'); btn.id = 'toggle-soporte'; btn.className = 'agent-btn attention'; btn.innerHTML = `<img id="agent-img" src="${agentImgUrl}" alt="Agente de Apoyo">`;
+    container.appendChild(btn);
+    document.getElementById('agent-img').onerror = () => { document.getElementById('agent-img').src = 'https://via.placeholder.com/150'; };
+
+    const defaultText = `¿Tienes preguntas sobre "${pageTitle}" u otras cuestiones de nuestra web?`;
+    const downloadText = `Descarga nuestros archivos sobre "${pageTitle}" o pregúntame sobre otros temas haciendo click en mi imagen`;
+    bubble.innerHTML = `<span class="close-bubble" id="close-bubble">&times;</span> ${hasYouTube ? downloadText : defaultText}`;
+
+    const pageKey = 'bubbleClosed_' + window.location.pathname;
+    if (localStorage.getItem(pageKey) !== 'true') {
+      setTimeout(() => { btn.classList.remove('attention'); bubble.style.display = 'block'; }, attentionDelay);
+    }
+
+    bubble.addEventListener('click', e => { if (e.target.id === 'close-bubble') { e.stopPropagation(); bubble.style.display = 'none'; localStorage.setItem(pageKey,'true'); }});
+    btn.addEventListener('click', e => { e.stopPropagation(); container.classList.toggle('open'); });
+    document.addEventListener('click', e => { if (!container.contains(e.target)) container.classList.remove('open'); });
+
+    const textarea = document.getElementById('custom-message');
+    const sendBtn = document.getElementById('send-custom');
+    const loader = document.getElementById('chat-loader');
+    const aiResp = document.getElementById('ai-response');
+    textarea.addEventListener('input', () => {
+      sendBtn.style.display = textarea.value.trim().length >= 3 ? 'block' : 'none';
+    });
+    sendBtn.addEventListener('click', async e => {
+      e.stopPropagation();
+      const userMsg = textarea.value.trim(); if (!userMsg) return;
+      sendBtn.disabled = true;
+      loader.style.display = 'block';
+      aiResp.textContent = '';
+      try {
+        const res = await fetch('https://compartitura.synology.me:5050/api/chat', {
+          method: 'POST', headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ message: userMsg, page: pageTitle })
+        });
+        const data = await res.json();
+        aiResp.textContent = data.reply || 'Lo siento, no tengo respuesta en este momento.';
+      } catch(err) {
+        aiResp.textContent = 'Error al obtener respuesta de IA.';
+      } finally {
+        loader.style.display = 'none';
+        sendBtn.disabled = false;
+      }
+    });
+  });
+</script>

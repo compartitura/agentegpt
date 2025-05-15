@@ -1,7 +1,7 @@
 // chatbot.js
 ;(function() {
   // 1) Inyectar estilos
-  const style = document.createElement('style')
+  const style = document.createElement("style");
   style.textContent = `
     #chatbot {
       position: fixed;
@@ -52,8 +52,8 @@
       border-top: 1px solid #ccc;
       font-size: 14px;
     }
-  `
-  document.head.appendChild(style)
+  `;
+  document.head.appendChild(style);
 
   // 2) Inyectar estructura HTML
   const html = `
@@ -65,38 +65,43 @@
       <div id="chat-output"></div>
       <textarea id="chat-input" rows="2" placeholder="Escribe tu pregunta..."></textarea>
     </div>
-  `
-  document.body.insertAdjacentHTML('beforeend', html)
+  `;
+  document.body.insertAdjacentHTML("beforeend", html);
 
   // 3) Lógica de interacción
-  const chatInput = document.getElementById("chat-input")
-  const chatOutput = document.getElementById("chat-output")
-  const resetBtn   = document.getElementById("reset-btn")
+  const chatInput = document.getElementById("chat-input");
+  const chatOutput = document.getElementById("chat-output");
+  const resetBtn = document.getElementById("reset-btn");
 
-  // Reiniciar conversación
   resetBtn.addEventListener("click", () => {
-    chatOutput.innerHTML = ""
-    chatInput.value = ""
-  })
+    chatOutput.innerHTML = "";
+    chatInput.value = "";
+  });
 
-  // Enviar al presionar Enter
-  chatInput.addEventListener("keypress", async e => {
+  chatInput.addEventListener("keypress", async (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault()
-      const message = chatInput.value.trim()
-      if (!message) return
+      e.preventDefault();
+      const message = chatInput.value.trim();
+      if (!message) return;
 
-      chatOutput.innerHTML += `<div><strong>Tú:</strong> ${message}</div>`
-      chatInput.value = ""
+      chatOutput.innerHTML += `<div><strong>Tú:</strong> ${message}</div>`;
+      chatInput.value = "";
 
-      const res = await fetch("http://localhost:3001/chat", {
+      const res = await fetch("/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message })
-      })
-      const { reply } = await res.json()
-      chatOutput.innerHTML += `<div><strong>Agente de Compartitura:</strong> ${reply}</div>`
-      chatOutput.scrollTop = chatOutput.scrollHeight
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: res.statusText }));
+        chatOutput.innerHTML += `<div><strong>Error:</strong> ${err.error}</div>`;
+        return;
+      }
+
+      const { reply } = await res.json();
+      chatOutput.innerHTML += `<div><strong>Agente de Compartitura:</strong> ${reply}</div>`;
+      chatOutput.scrollTop = chatOutput.scrollHeight;
     }
-  })
-})()
+  });
+})();

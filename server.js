@@ -3,42 +3,19 @@ const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const path = require("path");
-const fs = require("fs");
 const { OpenAI } = require("openai");
-const products = require("./product.json");
+const products = require("./product.json"); // Cada producto debe tener ProductURL e image
 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname)));
-app.use("/partituras", express.static(path.join(__dirname, "partituras")));
 
-// Sistema de prompts que obliga a usar solo recursos internos
 const systemPrompt = `
-Eres el Agente de Compartitura, un asistente experto que SOLO utiliza recursos de ESTE sitio:
-- Para partituras, ofrece enlaces a /partituras/{archivo}.
-- Para productos, busca en nuestro product.json y enlaza a /products/{id}.
-Nunca menciones ni enlaces sitios externos. Sé claro, conciso y profesional.
+Eres el Agente de Compartitura, llamado Cecilia.
+Cuando ofrezcas productos, siempre usa la URL que aparece en el campo "ProductURL" de nuestro catálogo.
+Nunca enlaces por ID ni uses URLs internas.
 `;
-
-// Búsqueda rule-based de partituras
-app.get("/partituras/search", (req, res) => {
-  const q = (req.query.q || "").toLowerCase();
-  let files = [];
-  try {
-    files = fs.readdirSync(path.join(__dirname, "partituras"));
-  } catch {
-    return res.status(500).json({ error: "No se pudo leer carpeta partituras." });
-  }
-  const matches = files
-    .filter(f => f.toLowerCase().includes(q))
-    .slice(0, 10)
-    .map(f => ({
-      name: path.basename(f, path.extname(f)),
-      url: `/partituras/${encodeURIComponent(f)}`
-    }));
-  res.json({ partituras: matches });
-});
 
 // Búsqueda rule-based de productos
 app.get("/products/search", (req, res) => {
@@ -50,39 +27,26 @@ app.get("/products/search", (req, res) => {
     )
     .slice(0, 10)
     .map(p => ({
-      id: p.id,
-      name: p.name,
-      url: `/products/${p.id}`,
-      image: p.image // espera que product.json incluya campo `image`
+      name:       p.name,
+      url:        p.ProductURL,
+      image:      p.image
     }));
   res.json({ products: matches });
 });
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-
-// Chat endpoint con interceptación rule-based
+// Endpoint de chat
 app.post("/chat", async (req, res) => {
   const userMessage = req.body.message || "";
   const q = userMessage.toLowerCase();
 
-  // Si menciona partituras, no llamar a OpenAI
-  if (/partitura/i.test(q)) {
-    const files = fs.readdirSync(path.join(__dirname, "partituras"))
-      .filter(f => f.toLowerCase().includes(q))
-      .slice(0, 5)
-      .map(f => `- [${path.basename(f, path.extname(f))}](/partituras/${encodeURIComponent(f)})`)
-      .join("\n");
-    return res.json({ reply: `Estas son nuestras partituras:\n${files}` });
-  }
-
-  // Si menciona productos
+  // Si busca productos
   if (/comprar|producto|instrumento/i.test(q)) {
     const matches = products
       .filter(p => p.name.toLowerCase().includes(q))
       .slice(0, 5)
       .map(p =>
-        `- <img src="${p.image}" width="50" style="vertical-align:middle;border-radius:4px;margin-right:8px;" />` +
-        `<a href="/products/${p.id}">${p.name}</a>`
+        `<img src="${p.image}" width="40" style="vertical-align:middle;border-radius:4px;margin-right:8px;"/>` +
+        `<a href="${p.ProductURL}" target="_blank">${p.name}</a>`
       )
       .join("\n");
     return res.json({ reply: `Estos productos coincidentes:\n${matches}` });
@@ -90,11 +54,12 @@ app.post("/chat", async (req, res) => {
 
   // Fallback a OpenAI
   try {
+    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
     const response = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
       messages: [
-        { role: "system", content: systemPrompt.trim() },
-        { role: "user",   content: userMessage }
+        { role: "system",  content: systemPrompt.trim() },
+        { role: "user",    content: userMessage }
       ]
     });
     const content = response.choices?.[0]?.message?.content || "";
@@ -105,6 +70,10 @@ app.post("/chat", async (req, res) => {
   }
 });
 
-// Sirve index.html automáticamente; archivos estáticos ya cubiertos
+// Sirve partituras (si tienes carpeta)
+app.use("/partituras", express.static(path.join(__dirname, "partituras")));
+
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => console.log(`Servidor en http://localhost:${PORT}`));
+app.listen(PORT, () => {
+  console.log(`Servidor escuchando en http://localhost:${PORT}`);
+});

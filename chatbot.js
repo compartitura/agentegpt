@@ -1,9 +1,9 @@
 // chatbot.js
 ;(function() {
-  const avatarUrl = "https://www.compartitura.org/medias/images/cecilia.png";
+  const avatarUrl = "https://www.compartitura.org/medias/images/captura-12.jpg";
   const isMobile = window.innerWidth <= 600;
 
-  // Inyecta estilos mínimos (puedes añadir animaciones como antes)
+  // Estilos básicos + burbuja grande + bocadillo
   const style = document.createElement("style");
   style.textContent = `
     #chat-avatar { position:fixed; bottom:20px; right:20px;
@@ -12,113 +12,127 @@
     #chatbot { position:fixed;
       ${isMobile
         ? "top:0; left:0; width:100vw; height:100vh; border-radius:0;"
-        : "bottom:110px; right:600px; width:320px; height:400px; border-radius:12px;"}
+        : "bottom:110px; right:600px; width:360px; height:440px; border-radius:12px;"}
       background:white; border:1px solid #ccc; display:none;
       flex-direction:column; font-family:sans-serif; z-index:9999; }
     #chat-header { display:flex; align-items:center;
-      padding:8px; background:#007bff; color:white; }
-    #chat-header img { width:32px; height:32px; border-radius:50%; margin-right:8px; }
+      padding:8px; background:#075E54; color:white; }
+    #chat-header img { width:32px; height:32px; border-radius:50%; margin-right:8px;
+      box-shadow:0 0 0 2px #075E54; }
     #chat-header h4 { margin:0; flex:1; font-size:16px; }
     #chat-header button { background:transparent; border:none; color:white; cursor:pointer; }
-    #chat-output { flex:1; padding:8px; overflow-y:auto; background:#e5ddd5; }
-    .chat-message { margin-bottom:8px; }
-    .chat-message.user { text-align:right; }
-    .chat-bubble { display:inline-block; padding:8px; border-radius:12px;
-      background:#ffffff; box-shadow:0 1px 2px rgba(0,0,0,0.1); }
+    #chat-output { flex:1; padding:12px; overflow-y:auto; background:#e5ddd5; }
+    .chat-message { display:flex; margin-bottom:12px; }
+    .chat-message.user { justify-content:flex-end; }
+    .chat-bubble { max-width:85%; padding:14px; border-radius:16px;
+      background:#ffffff; box-shadow:0 1px 3px rgba(0,0,0,0.1); position:relative; }
     .chat-message.user .chat-bubble { background:#dcf8c6; }
+    .chat-message.agent .chat-bubble::before {
+      content:''; position:absolute; top:12px; left:-8px;
+      border-width:8px; border-style:solid;
+      border-color:transparent #ffffff transparent transparent;
+    }
     .chat-bubble a { display:inline-block; background:#000; color:#fff;
-      padding:4px 8px; border-radius:4px; text-decoration:none; margin-top:4px; }
+      padding:4px 8px; border-radius:4px; text-decoration:none; margin-top:6px; }
     .chat-bubble a:hover { opacity:0.8; }
-    #chat-input { border:none; border-top:1px solid #ccc; padding:8px; width:100%;
-      box-sizing:border-box; }
+    #chat-input { border:none; border-top:1px solid #ccc; padding:12px;
+      font-size:14px; resize:none; outline:none; width:100%; box-sizing:border-box; }
   `;
   document.head.appendChild(style);
 
-  // Inserta HTML
+  // HTML
   const html = `
     <img id="chat-avatar" src="${avatarUrl}" alt="Avatar"/>
     <div id="chatbot">
       <div id="chat-header">
         <img src="${avatarUrl}" alt="Agent"/>
         <h4>Agente de Compartitura</h4>
-        <button id="reset-btn">✕</button>
+        <button id="close-btn">✕</button>
       </div>
       <div id="chat-output">
-        <div class="chat-message agent"><div class="chat-bubble">Hola, ¿en qué producto estás interesado?</div></div>
+        <div class="chat-message agent">
+          <div class="chat-bubble">Hola, ¿qué producto o partitura buscas?</div>
+        </div>
       </div>
       <textarea id="chat-input" rows="2" placeholder="Escribe tu búsqueda..."></textarea>
     </div>
   `;
   document.body.insertAdjacentHTML("beforeend", html);
 
+  // Referencias
   const avatar = document.getElementById("chat-avatar");
   const chatbox = document.getElementById("chatbot");
-  const resetBtn = document.getElementById("reset-btn");
+  const closeBtn = document.getElementById("close-btn");
   const chatOutput = document.getElementById("chat-output");
   const chatInput = document.getElementById("chat-input");
 
   // Mostrar/ocultar
   avatar.onclick = () => chatbox.style.display = "flex";
-  resetBtn.onclick = () => {
-    chatOutput.innerHTML = `<div class="chat-message agent"><div class="chat-bubble">Hola, ¿en qué producto estás interesado?</div></div>`;
-    chatInput.value = "";
-    chatbox.style.display = "none";
-  };
+  closeBtn.onclick = () => chatbox.style.display = "none";
 
   // Añade mensaje
-  function addMessage(text, user=false) {
-    const div = document.createElement("div");
-    div.className = "chat-message " + (user?"user":"agent");
-    const span = document.createElement("div");
-    span.className = "chat-bubble";
-    span.innerHTML = text;
-    div.appendChild(span);
-    chatOutput.appendChild(div);
+  function addMessage(html, user=false) {
+    const msg = document.createElement("div");
+    msg.className = `chat-message ${user?"user":"agent"}`;
+    const bubble = document.createElement("div");
+    bubble.className = "chat-bubble";
+    bubble.innerHTML = html;
+    msg.appendChild(bubble);
+    chatOutput.appendChild(msg);
     chatOutput.scrollTop = chatOutput.scrollHeight;
   }
 
-  // Al presionar Enter
+  // Enter => buscar
   chatInput.addEventListener("keypress", async e => {
     if (e.key==="Enter" && !e.shiftKey) {
       e.preventDefault();
       const q = chatInput.value.trim();
       if (!q) return;
-      addMessage(q,true);
+      addMessage(q, true);
       chatInput.value="";
 
-      // Intento búsqueda de productos
+      // Indicator
+      const load = document.createElement("div");
+      load.className="chat-message agent";
+      load.innerHTML=`<div class="chat-bubble">...</div>`;
+      chatOutput.appendChild(load);
+      chatOutput.scrollTop = chatOutput.scrollHeight;
+
+      // Lógica: busca productos primero
+      let handled=false;
       try {
         const resp = await fetch(`/products/search?q=${encodeURIComponent(q)}`);
-        const { products } = await resp.json();
-        if (products.length) {
-          products.forEach(p=>{
-            addMessage(`${p.name}<br><a href="${p.url}">Ver producto</a>`);
-          });
-          return;
+        if (resp.ok) {
+          const { products } = await resp.json();
+          if (products.length) {
+            products.forEach(p=>{
+              addMessage(
+                `<img src="${p.image}" width="40" style="vertical-align:middle;margin-right:8px;border-radius:4px;" />`+
+                `<a href="${p.url}">${p.name}</a>`
+              );
+            });
+            handled=true;
+          }
         }
       } catch{}
 
-      // Si no hay producto, fallback a ChatGPT
-      const loading = document.createElement("div");
-      loading.className="chat-message agent";
-      loading.innerHTML=`<div class="chat-bubble">...</div>`;
-      chatOutput.appendChild(loading);
-      chatOutput.scrollTop = chatOutput.scrollHeight;
-
-      let reply="Lo siento, no tengo respuesta.";
-      try {
-        const res = await fetch("/chat", {
-          method:"POST",
-          headers:{"Content-Type":"application/json"},
-          body:JSON.stringify({ message:q })
-        });
-        const { reply: r, error } = await res.json();
-        reply = r || error || reply;
-      } catch {
-        reply="Error de conexión al servidor.";
+      // fallback OpenAI
+      let reply="";
+      if (!handled) {
+        try {
+          const res = await fetch("/chat", {
+            method:"POST",
+            headers:{"Content-Type":"application/json"},
+            body:JSON.stringify({ message:q })
+          });
+          const data = await res.json();
+          reply = data.reply || "Lo siento, no tengo respuesta.";
+        } catch {
+          reply="Error de conexión.";
+        }
+        addMessage(reply);
       }
-      loading.remove();
-      setTimeout(()=>addMessage(reply),300);
+      load.remove();
     }
   });
 })();

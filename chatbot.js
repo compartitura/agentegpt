@@ -11,7 +11,6 @@
       50% { box-shadow: 0 0 0 12px rgba(37,211,102,0.4); }
       100% { box-shadow: 0 0 0 4px rgba(37,211,102,0.8); }
     }
-    /* Avatar */
     #chat-avatar {
       display: ${isMobile ? "none" : "block"};
       position: fixed; bottom:20px; right:20px;
@@ -20,7 +19,6 @@
       cursor:pointer; z-index:10000;
       animation: pulse 2s ease-in-out infinite;
     }
-    /* Chatbot contenedor */
     #chatbot {
       position: fixed;
       ${isMobile
@@ -34,61 +32,26 @@
       font-family: sans-serif;
       z-index: 9999;
     }
-    #chat-header {
-      display: flex;
-      align-items: center;
-      padding: 8px;
-      background: #075E54;
-      color: white;
-      flex-shrink: 0;
-    }
-    #chat-header img {
-      width: 40px; height: 40px; border-radius: 50%; margin-right: 8px;
-      box-shadow: 0 0 0 2px #075E54;
-    }
-    #chat-header h4 {
-      margin: 0; flex: 1; font-size: 16px;
-    }
-    #chat-header button {
-      background: transparent; border: none; color: white; font-size: 18px; cursor: pointer;
-    }
-    #chat-output {
-      flex: 1 1 auto;
-      padding: 12px;
-      overflow-y: auto;
-      background: #e5ddd5;
-    }
-    .chat-message { display: flex; margin-bottom: 12px; }
-    .chat-message.user { justify-content: flex-end; }
-    .chat-bubble {
-      max-width: 85%; padding: 14px; border-radius: 16px;
-      background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-      position: relative;
-    }
-    .chat-message.user .chat-bubble { background: #dcf8c6; }
-    .chat-message.agent .chat-bubble::before {
-      content: ''; position: absolute; top: 12px; left: -8px;
-      border-width: 8px; border-style: solid;
-      border-color: transparent #ffffff transparent transparent;
-    }
-    .chat-bubble a {
-      display: inline-block; background: #000; color: #fff;
-      padding: 4px 8px; border-radius: 4px; text-decoration: none; margin-top: 6px;
-    }
-    .chat-bubble a:hover { opacity: 0.8; }
-    /* Input siempre visible */
+    #chat-header { display: flex; align-items: center; padding: 8px; background: #075E54; color: white; flex-shrink: 0; }
+    #chat-header img { width:40px; height:40px; border-radius:50%; margin-right:8px; box-shadow:0 0 0 2px #075E54; }
+    #chat-header h4 { margin:0; flex:1; font-size:16px; }
+    #chat-header button { background:transparent; border:none; color:white; font-size:18px; cursor:pointer; }
+    #chat-output { flex: 1 1 auto; padding:12px; overflow-y:auto; background:#e5ddd5; }
+    .chat-message { display:flex; margin-bottom:12px; }
+    .chat-message.user { justify-content:flex-end; }
+    .chat-bubble { max-width:85%; padding:14px; border-radius:16px; background:#ffffff; box-shadow:0 1px 3px rgba(0,0,0,0.1); position:relative; }
+    .chat-message.user .chat-bubble { background:#dcf8c6; }
+    .chat-message.agent .chat-bubble::before { content:''; position:absolute; top:12px; left:-8px; border-width:8px; border-style:solid; border-color:transparent #ffffff transparent transparent; }
+    .chat-bubble a { display:inline-block; background:#000; color:#fff; padding:4px 8px; border-radius:4px; text-decoration:none; margin-top:6px; }
+    .chat-bubble a:hover { opacity:0.8; }
     #chat-input {
-      border: none; border-top: 1px solid #ccc;
-      padding: 12px; font-size: 16px; outline: none;
-      width: 100%; box-sizing: border-box;
-      flex-shrink: 0;
-      ${isMobile ? "height: 70px;" : "height: 60px;"}
-      display: block;
+      border:none; border-top:1px solid #ccc; padding:12px; font-size:16px; outline:none; width:100%; box-sizing:border-box;
+      flex-shrink: 0; height:70px; display:block;
     }
   `;
   document.head.appendChild(style);
 
-  // Inyectar HTML
+  // Inyectar HTML con rows en textarea
   const html = `
     <div id="chat-avatar"></div>
     <div id="chatbot">
@@ -98,7 +61,7 @@
         ${isMobile ? "" : `<button id="close-btn">✕</button>`}
       </div>
       <div id="chat-output"></div>
-      <textarea id="chat-input" placeholder="Escribe tu mensaje..."></textarea>
+      <textarea id="chat-input" rows="2" placeholder="Escribe tu mensaje..."></textarea>
     </div>
   `;
   document.body.insertAdjacentHTML("beforeend", html);
@@ -110,7 +73,7 @@
   const chatInput = document.getElementById("chat-input");
 
   // Saludo inicial
-  function addMessage(html, user = false) {
+  function addMessage(html, user=false) {
     const msg = document.createElement("div");
     msg.className = `chat-message ${user ? 'user' : 'agent'}`;
     const bubble = document.createElement("div");
@@ -122,7 +85,12 @@
   }
   addMessage("Hola, ¿te puedo ayudar?");
 
-  // Mostrar/ocultar
+  // Mostrar chat by default on mobile
+  if (isMobile) {
+    chatbox.style.display = "flex";
+  }
+
+  // Mostrar/ocultar por click en avatar (desktop)
   avatar.onclick = () => chatbox.style.display = "flex";
   if (closeBtn) closeBtn.onclick = () => chatbox.style.display = "none";
 
@@ -131,11 +99,14 @@
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       const q = chatInput.value.trim(); if (!q) return;
-      addMessage(q, true); chatInput.value = "";
+      addMessage(q, true);
+      chatInput.value = "";
       const loading = document.createElement("div");
       loading.className = "chat-message agent";
       loading.innerHTML = `<div class='chat-bubble'>...</div>`;
-      chatOutput.appendChild(loading); chatOutput.scrollTop = chatOutput.scrollHeight;
+      chatOutput.appendChild(loading);
+      chatOutput.scrollTop = chatOutput.scrollHeight;
+
       let handled = false;
       try {
         const resp = await fetch(`/products/search?q=${encodeURIComponent(q)}`);
@@ -150,6 +121,7 @@
           }
         }
       } catch {}
+
       if (!handled) {
         let reply = "Lo siento, no tengo respuesta.";
         try {
@@ -158,6 +130,7 @@
         } catch { reply = "Error de conexión."; }
         addMessage(reply);
       }
+
       loading.remove();
     }
   });

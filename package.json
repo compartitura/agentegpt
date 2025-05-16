@@ -1,18 +1,15 @@
 {
-  "name": "chatgptenlaweb",
+  "name": "agente-compartitura",
   "version": "1.0.0",
+  "description": "Agente de Compartitura – chat flotante con ChatGPT",
   "main": "server.js",
   "scripts": {
-  "start": "node server.js"
-},
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "body-parser": "^2.2.0",
-    "cors": "^2.8.5",
-    "express": "^5.1.0",
-    "openai": "^4.98.0"
+    "start": "node server.js"
   },
-  "description": ""
+  "dependencies": {
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "openai": "^4.98.0"
+  }
 }

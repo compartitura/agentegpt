@@ -7,12 +7,12 @@
   const style = document.createElement("style");
   style.textContent = `
     #chat-avatar { position:fixed; bottom:20px; right:20px;
-      width:50px; height:50px; border-radius:50%; cursor:pointer;
+      width:80px; height:80px; border-radius:50%; cursor:pointer;
       box-shadow:0 0 0 4px #007bff; z-index:10000; }
     #chatbot { position:fixed;
       ${isMobile
         ? "top:0; left:0; width:100vw; height:100vh; border-radius:0;"
-        : "bottom:80px; right:20px; width:320px; height:400px; border-radius:12px;"}
+        : "bottom:110px; right:600px; width:320px; height:400px; border-radius:12px;"}
       background:white; border:1px solid #ccc; display:none;
       flex-direction:column; font-family:sans-serif; z-index:9999; }
     #chat-header { display:flex; align-items:center;

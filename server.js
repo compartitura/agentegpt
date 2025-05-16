@@ -4,8 +4,6 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const path = require("path");
 const { OpenAI } = require("openai");
-
-// Carga tu catálogo
 const products = require("./product.json");
 
 const app = express();
@@ -14,8 +12,14 @@ app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname)));
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-const systemPrompt = process.env.SYSTEM_PROMPT || `
-Eres el Agente de Compartitura, un asistente para ayudar a músicos a encontrar partituras y vender instrumentos.
+
+// Prompt actualizado: NO redirigir a sitios externos,
+// usar solo recursos de compartitura.org y catálogo interno.
+const systemPrompt = `
+Eres el Agente de Compartitura, un asistente para ayudar a músicos a encontrar partituras y productos dentro de este sitio.
+Nunca ofrezcas enlaces externos fuera de compartitura.org ni de nuestro catálogo interno.
+Cuando el usuario pregunte por partituras, sugiéreles directamente los archivos alojados en /partituras.
+Cuando pregunte por productos, usa nuestro catálogo product.json y enlaza a /products/search o a la URL interna del producto.
 `;
 
 // Endpoint de búsqueda de productos
@@ -30,7 +34,7 @@ app.get("/products/search", (req, res) => {
   res.json({ products: matches });
 });
 
-// Endpoint de chat con OpenAI
+// Endpoint de chat
 app.post("/chat", async (req, res) => {
   const userMessage = req.body.message || "";
   try {

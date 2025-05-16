@@ -53,7 +53,7 @@
       background: transparent; border: none; color: white; font-size: 18px; cursor: pointer;
     }
     #chat-output {
-      flex: 1;
+      flex: 1 1 auto;
       padding: 12px;
       overflow-y: auto;
       background: #e5ddd5;
@@ -67,16 +67,13 @@
     }
     .chat-message.user .chat-bubble { background: #dcf8c6; }
     .chat-message.agent .chat-bubble::before {
-      content: '';
-      position: absolute; top: 12px; left: -8px;
+      content: ''; position: absolute; top: 12px; left: -8px;
       border-width: 8px; border-style: solid;
       border-color: transparent #ffffff transparent transparent;
     }
     .chat-bubble a {
-      display: inline-block;
-      background: #000; color: #fff;
-      padding: 4px 8px; border-radius: 4px;
-      text-decoration: none; margin-top: 6px;
+      display: inline-block; background: #000; color: #fff;
+      padding: 4px 8px; border-radius: 4px; text-decoration: none; margin-top: 6px;
     }
     .chat-bubble a:hover { opacity: 0.8; }
     /* Input siempre visible */
@@ -86,11 +83,7 @@
       width: 100%; box-sizing: border-box;
       flex-shrink: 0;
       ${isMobile ? "height: 70px;" : "height: 60px;"}
-    }
-    /* En móvil, forzar textarea visible */
-    @media (max-width: 600px) {
-      #chat-input { display: block; }
-      #chat-output { margin-bottom: 0; }
+      display: block;
     }
   `;
   document.head.appendChild(style);
@@ -116,7 +109,7 @@
   const chatOutput = document.getElementById("chat-output");
   const chatInput = document.getElementById("chat-input");
 
-  // Saludo
+  // Saludo inicial
   function addMessage(html, user = false) {
     const msg = document.createElement("div");
     msg.className = `chat-message ${user ? 'user' : 'agent'}`;
@@ -129,7 +122,7 @@
   }
   addMessage("Hola, ¿te puedo ayudar?");
 
-  // Mostrar/ocultar chat
+  // Mostrar/ocultar
   avatar.onclick = () => chatbox.style.display = "flex";
   if (closeBtn) closeBtn.onclick = () => chatbox.style.display = "none";
 
@@ -149,12 +142,10 @@
         if (resp.ok) {
           const { products } = await resp.json();
           if (products.length) {
-            products.forEach(p => {
-              addMessage(
-                `<img src="${p.image}" width="40" style="vertical-align:middle;border-radius:4px;margin-right:8px;"/>` +
-                `<a href="${p.url}">${p.name}</a>`
-              );
-            });
+            products.forEach(p => addMessage(
+              `<img src="${p.image}" width="40" style="vertical-align:middle;border-radius:4px;margin-right:8px;"/>` +
+              `<a href="${p.url}">${p.name}</a>`
+            ));
             handled = true;
           }
         }
@@ -162,11 +153,7 @@
       if (!handled) {
         let reply = "Lo siento, no tengo respuesta.";
         try {
-          const res = await fetch("/chat", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ message: q })
-          });
+          const res = await fetch("/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ message: q }) });
           const data = await res.json(); reply = data.reply || data.error || reply;
         } catch { reply = "Error de conexión."; }
         addMessage(reply);

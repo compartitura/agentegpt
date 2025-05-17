@@ -2,22 +2,14 @@ Pasos para desplegar tras cualquier cambio:
 
 Agregar cambios
 
-bash
-Copiar
-Editar
+git status
+
 git add .
-Crear commit (pon un mensaje claro)
+git commit -m "modificacion de cuadro de chat"
 
-bash
-Copiar
-Editar
-git commit -m "Describe brevemente tus cambios"
-Enviar a GitHub
-
-bash
-Copiar
-Editar
 git push origin main
+
+
 Trigger manual en Render
 
 En tu Dashboard → tu servicio → Deploys → Deploy latest commit

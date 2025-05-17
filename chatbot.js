@@ -3,148 +3,178 @@
   const avatarUrl = "https://www.compartitura.org/medias/images/captura-12.jpg";
   const isMobile  = window.innerWidth <= 600;
 
-  // 1) Estilos
+  // Carga de fuente Inter
+  const fontLink = document.createElement("link");
+  fontLink.href = "https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap";
+  fontLink.rel  = "stylesheet";
+  document.head.appendChild(fontLink);
+
+  // Estilos
   const style = document.createElement("style");
   style.textContent = `
-    * { box-sizing:border-box; margin:0; padding:0; }
-    @keyframes pulse {
-      0%,100% { box-shadow:0 0 0 4px rgba(37,211,102,0.8); }
-      50%    { box-shadow:0 0 0 12px rgba(37,211,102,0.4); }
+    * {box-sizing: border-box; margin: 0; padding: 0;}
+    body, textarea, button {font-family: 'Inter', sans-serif;}
+    @keyframes bounce {
+      0%, 100% {transform: translateY(0);}
+      50% {transform: translateY(-6px);}
     }
     #chatbot-toggle {
-      display:${isMobile?"none":"block"};
-      position:fixed; bottom:20px; right:20px;
-      width:80px; height:80px; border-radius:50%;
-      background:url(${avatarUrl}) center/cover no-repeat;
-      cursor:pointer; z-index:10000; animation:pulse 2s infinite;
+      ${isMobile ? 'display: none;' : 'display: block;'}
+      position: fixed; bottom: 20px; right: 20px;
+      width: 80px; height: 80px; border-radius: 50%;
+      background: url(${avatarUrl}) center/cover no-repeat;
+      cursor: pointer; z-index: 10000;
+      animation: bounce 2s infinite;
     }
     #chatbot {
-      position:fixed;
-      ${isMobile
-        ? "top:0; left:0; width:100%; height:100%;"
-        : "bottom:100px; right:20px; width:360px; height:460px;"}
-      background:#fff; border:1px solid #ccc;
-      box-shadow:0 4px 8px rgba(0,0,0,0.15);
-      display:${isMobile?"flex":"none"};
-      flex-direction:column; z-index:9999; font-family:sans-serif;
+      position: fixed;
+      ${isMobile ? 'top: 0; left: 0; width: 100%; height: 100%;' : 'bottom: 100px; right: 20px; width: 360px; height: 520px;'}
+      background: #fff; border: 1px solid #ccc;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+      display: none; flex-direction: column; z-index: 9999;
     }
+    #chatbot.open { display: flex; }
     #chatbot-header {
-      display:flex; align-items:center; padding:10px;
-      background:#075E54; color:#fff; flex-shrink:0;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px; background: #075E54; color: #fff;
     }
-    #chatbot-header img { width:32px; height:32px; border-radius:50%; margin-right:8px; }
-    #chatbot-header h4 { flex:1; font-size:16px; }
-    #chatbot-close { background:transparent; border:none; color:#fff; font-size:18px; cursor:pointer; }
+    #chatbot-header .left { display: flex; align-items: center; }
+    #chatbot-header img {
+      width: 32px; height: 32px; border-radius: 50%; margin: 0 8px;
+    }
+    #chatbot-header h4 { font-size: 16px; margin-right: auto; }
+    #chatbot-close, #menu-btn {
+      background: transparent; border: none; color: #fff; cursor: pointer;
+    }
+    #chatbot-close { font-size: 18px; }
+    #menu-btn { font-size: 24px; }
+    #quick-menu {
+      position: absolute; top: 44px; right: 10px;
+      background: #fff; border: 1px solid #ccc;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      list-style: none; padding: 5px 0; margin: 0;
+      display: none; width: 220px; z-index: 10001;
+    }
+    #quick-menu li { padding: 8px 12px; color: #000; cursor: pointer; }
+    #quick-menu li:hover { background: #f0f0f0; }
     #chatbot-messages {
-      flex:1; padding:10px; overflow-y:auto; background:#e5ddd5;
+      flex: 1; padding: 10px;
+      overflow-y: auto; background: #e5ddd5;
     }
-    .chat-message { margin-bottom:10px; }
-    .chat-message.user { justify-content:flex-end; display:flex; }
+    .chat-message { margin-bottom: 10px; display: flex; }
+    .chat-message.user { justify-content: flex-end; }
     .chat-bubble {
-      display:inline-block; max-width:80%; padding:12px; border-radius:16px;
-      background:#fff; box-shadow:0 1px 3px rgba(0,0,0,0.1); word-wrap:break-word;
+      display: inline-block; max-width: 80%; padding: 12px;
+      border-radius: 16px; background: #fff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      word-wrap: break-word; white-space: pre-wrap;
     }
-    .chat-message.user .chat-bubble { background:#dcf8c6; }
-    .chat-bubble a {
-      display:inline-block; margin-top:6px;
-      background:#000; color:#fff; padding:4px 8px; border-radius:4px;
-      text-decoration:none;
+    .chat-message.user .chat-bubble { background: #dcf8c6; }
+    #typing-indicator { display: flex; gap: 4px; margin-bottom: 10px; }
+    .typing-dot {
+      width: 8px; height: 8px; background: #555;
+      border-radius: 50%; animation: bounce 1s infinite;
     }
-    .chat-bubble a:hover { opacity:0.8; }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+    #chatbot-input-container { position: relative; }
     #chatbot-input {
-      flex-shrink:0; width:100%; height:60px;
-      border:none; border-top:1px solid #ccc; padding:12px;
-      font-size:16px; resize:none; outline:none;
+      width: 100%; height: 60px; border: none; border-top: 1px solid #ccc;
+      padding: 12px; font-size: 16px; resize: none; outline: none;
+      padding-right: 50px;
+    }
+    #send-btn {
+      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+      width: 28px; height: 28px;
+      background: url('https://www.compartitura.org/medias/images/enviar-1.png') center/cover no-repeat;
+      cursor: pointer; display: none;
     }
   `;
   document.head.appendChild(style);
 
-  // 2) Inyectar HTML
+  // HTML structure
   document.body.insertAdjacentHTML("beforeend", `
     <div id="chatbot-toggle"></div>
     <div id="chatbot">
       <div id="chatbot-header">
-        <img src="${avatarUrl}" alt="Cecilia"/>
-        <h4>Agente Cecilia</h4>
-        ${isMobile?"":`<button id="chatbot-close">✕</button>`}
+        <div class="left">
+          <button id="chatbot-close">←</button>
+          <img src="${avatarUrl}" alt="Cecilia"/><h4>Cecilia</h4>
+        </div>
+        <button id="menu-btn">⋮</button>
+        <ul id="quick-menu">
+          <li data-q="Buscar partituras">Buscar partituras</li>
+          <li data-q="Buscar instrumentos">Buscar instrumentos</li>
+          <li data-q="Vender instrumentos">Vender instrumentos</li>
+          <li data-q="Buscar empleo / músicos">Buscar empleo / músicos</li>
+          <li data-q="Acceso a la comunidad en WhatsApp">Acceso a la comunidad en WhatsApp</li>
+          <li data-q="Activar/Renovar acceso al servidor">Activar/Renovar acceso al servidor</li>
+          <li data-q="Buscar cursos">Buscar cursos</li>
+          <li data-q="Buscar eventos de música clásica">Buscar eventos de música clásica</li>
+        </ul>
       </div>
       <div id="chatbot-messages"></div>
-      <textarea id="chatbot-input" placeholder="¿Qué necesitas?" rows="2"></textarea>
+      <div id="chatbot-input-container">
+        <textarea id="chatbot-input" placeholder="¿Qué necesitas?" rows="2"></textarea>
+        <div id="send-btn"></div>
+      </div>
     </div>
   `);
 
-  // 3) Referencias
-  const toggle   = document.getElementById("chatbot-toggle");
-  const bot      = document.getElementById("chatbot");
-  const closeBtn = document.getElementById("chatbot-close");
-  const msgs     = document.getElementById("chatbot-messages");
-  const input    = document.getElementById("chatbot-input");
+  // References
+  const toggle    = document.getElementById("chatbot-toggle");
+  const bot       = document.getElementById("chatbot");
+  const menuBtn   = document.getElementById("menu-btn");
+  const closeBtn  = document.getElementById("chatbot-close");
+  const quickMenu = document.getElementById("quick-menu");
+  const msgs      = document.getElementById("chatbot-messages");
+  const input     = document.getElementById("chatbot-input");
+  const sendBtn   = document.getElementById("send-btn");
 
-  // 4) Mostrar/ocultar
+  // Mobile: always open full-screen
   if (isMobile) {
-    bot.style.display = "flex";
+    bot.classList.add('open');
   } else {
-    toggle.onclick = () => bot.style.display = "flex";
-    closeBtn && (closeBtn.onclick = () => bot.style.display = "none");
+    // Desktop: toggle open/close
+    toggle.style.display = 'block';
+    toggle.onclick = () => bot.classList.toggle('open');
+  }
+  // Close button always removes open
+  closeBtn.onclick = () => bot.classList.remove('open');
+
+  // Quick-menu handling
+  menuBtn.onclick = e => { e.stopPropagation(); quickMenu.style.display = quickMenu.style.display === 'block' ? 'none' : 'block'; };
+  document.addEventListener('click', () => quickMenu.style.display = 'none');
+  quickMenu.querySelectorAll('li').forEach(li => li.onclick = () => { quickMenu.style.display = 'none'; sendToCecilia(li.dataset.q); });
+
+  // Show send icon when typing
+  input.addEventListener('input', () => sendBtn.style.display = input.value.trim() ? 'block' : 'none');
+  sendBtn.onclick = () => { if (input.value.trim()) { sendToCecilia(input.value.trim()); input.value = ''; sendBtn.style.display = 'none'; } };
+  input.addEventListener('keypress', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if (input.value.trim()) { sendToCecilia(input.value.trim()); input.value=''; sendBtn.style.display='none'; } } });
+
+  // Send with bouncing dots indicator
+  async function sendToCecilia(text) {
+    addMessage(text, true);
+    const ind = document.createElement('div'); ind.className='chat-message agent';
+    ind.innerHTML = `<div id="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
+    msgs.appendChild(ind); msgs.scrollTop = msgs.scrollHeight;
+    await new Promise(r => setTimeout(r, 3000)); ind.remove();
+
+    let reply = 'Lo siento, no tengo respuesta.';
+    try {
+      const res = await fetch('/chat', { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify({ message: text }) });
+      const d = await res.json(); reply = d.reply || d.error || reply;
+    } catch { reply = 'Error de conexión.'; }
+    addMessage(reply);
   }
 
-  // 5) Añadir mensaje
+  // Add message helper
   function addMessage(html, user=false) {
-    const div    = document.createElement("div");
-    div.className = "chat-message " + (user?"user":"agent");
-    const bub   = document.createElement("div");
-    bub.className = "chat-bubble";
-    bub.innerHTML = html;
-    div.appendChild(bub);
-    msgs.appendChild(div);
-    msgs.scrollTop = msgs.scrollHeight;
+    const div = document.createElement('div'); div.className='chat-message ' + (user ? 'user' : 'agent');
+    const bub = document.createElement('div'); bub.className='chat-bubble'; bub.innerHTML = html;
+    div.appendChild(bub); msgs.appendChild(div); msgs.scrollTop = msgs.scrollHeight;
   }
-  addMessage("Hola, ¿en qué puedo ayudarte?");
 
-  // 6) Lógica de envío
-  input.addEventListener("keypress", async e => {
-    if (e.key==="Enter" && !e.shiftKey) {
-      e.preventDefault();
-      const q = input.value.trim(); if(!q) return;
-      addMessage(q, true); input.value="";
-
-      const loading = document.createElement("div");
-      loading.className="chat-message agent";
-      loading.innerHTML=`<div class="chat-bubble">...</div>`;
-      msgs.appendChild(loading); msgs.scrollTop=msgs.scrollHeight;
-
-      // Busca productos
-      let handled=false;
-      try {
-        const resp = await fetch(`/products/search?q=${encodeURIComponent(q)}`);
-        if(resp.ok){
-          const {products} = await resp.json();
-          if(products.length){
-            products.forEach(p=>addMessage(
-              `<img src="${p.image}" width="40" style="vertical-align:middle;border-radius:4px;margin-right:8px;"/>`+
-              `<a href="${p.url}" target="_blank">${p.name}</a>`
-            ));
-            handled=true;
-          }
-        }
-      }catch{}
-
-      // Fallback a ChatGPT
-      if(!handled){
-        let reply="Lo siento, no tengo respuesta.";
-        try{
-          const res=await fetch("/chat",{
-            method:"POST",
-            headers:{"Content-Type":"application/json"},
-            body:JSON.stringify({message:q})
-          });
-          const d=await res.json();
-          reply=d.reply||d.error||reply;
-        }catch{reply="Error de conexión.";}
-        addMessage(reply);
-      }
-
-      loading.remove();
-    }
-  });
+  // Initial greeting
+  addMessage('Hola, ¿en qué puedo ayudarte?');
 })();

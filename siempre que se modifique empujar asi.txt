@@ -1,0 +1,26 @@
+Pasos para desplegar tras cualquier cambio:
+
+Agregar cambios
+
+bash
+Copiar
+Editar
+git add .
+Crear commit (pon un mensaje claro)
+
+bash
+Copiar
+Editar
+git commit -m "Describe brevemente tus cambios"
+Enviar a GitHub
+
+bash
+Copiar
+Editar
+git push origin main
+Trigger manual en Render
+
+En tu Dashboard → tu servicio → Deploys → Deploy latest commit
+(o “Clear build cache & deploy” si cambias dependencias)
+
+Cada vez que modifiques código, repite estos pasos y Render recogerá automáticamente tu versión más reciente.

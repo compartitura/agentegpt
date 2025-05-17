@@ -1,0 +1,21 @@
+{
+  "name": "Compartitura, comunidad de musicos clásicos",
+  "short_name": "Ccompartitura",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#fff",
+  "theme_color": "#050505",
+  "description": "La herramienta perfecta para docentes, directores y musicos en general",
+  "icons": [
+    {
+      "src": "https://www.compartitura.org/medias/images/icon-192x192.png",
+      "sizes": "logocompartiturapng.png",
+      "type": "image/png"
+    },
+    {
+      "src": "https://www.compartitura.org/medias/images/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

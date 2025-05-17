@@ -8,7 +8,7 @@ const products = require("./product.json");
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-// Mapa de sinónimos español-inglés para búsqueda flexible
+// Sinónimos español-inglés para búsqueda flexible
 const synonyms = {
   'saxofon': 'saxophone',
   'saxofón': 'saxophone',
@@ -30,7 +30,7 @@ const synonyms = {
   'trombón': 'trombone',
   'acústica': 'acoustic',
   'eléctrica': 'electric',
-  // ...agrega más si lo deseas
+  // ...agrega más si lo necesitas
 };
 
 const systemPrompt = `
@@ -56,17 +56,17 @@ function lookup_product(query) {
     const name = `${exact.Brand} ${exact.Model}`;
     return (
       `<div style="display:flex;flex-direction:column;align-items:center;margin-bottom:20px;">
-        <div style="text-align:center;width:100%;font-weight:600;font-size:18px;margin-bottom:4px;">${name}</div>
-        <button onclick="window.open('${exact.affiliateURL}','_blank')" style="display:flex;align-items:center;justify-content:center;background:#fff;border:2px solid #075E54;border-radius:10px;padding:7px 18px;margin:6px 0;cursor:pointer;color:#075E54;font-size:15px;font-weight:500;">
+        <div style="text-align:center;width:100%;font-weight:600;font-size:18px;margin-bottom:4px;color:#000;">${name}</div>
+        <button onclick="window.open('${exact.affiliateURL}','_blank')" style="display:flex;align-items:center;justify-content:center;background:#fff;border:2px solid #000;border-radius:10px;padding:7px 18px;margin:6px 0;cursor:pointer;color:#000;font-size:15px;font-weight:500;">
           <img src="${exact.ImageURL}" alt="${name}" style="width:38px;height:38px;object-fit:cover;border-radius:8px;margin-right:10px;">
           Más información
         </button>
       </div>
-      <div style="font-size:14px;color:#075E54;text-align:center;">
+      <div style="font-size:14px;color:#000;text-align:center;">
         ${exact.Description ? exact.Description + "<br>" : ""}
         ¿Necesitas accesorios, partituras, métodos o cursos para este instrumento?
       </div>
-      <div style="text-align:center;margin-top:14px;">¿Algo más en lo que pueda ayudarte?</div>`
+      <div style="text-align:center;margin-top:14px;color:#000;">¿Algo más en lo que pueda ayudarte?</div>`
     );
   }
 
@@ -99,13 +99,13 @@ function lookup_product(query) {
   if (sim.length > 0) {
     const marcas = [...new Set(sim.map(p => p.Brand).filter(Boolean))];
     let pregunta_acotar = marcas.length > 1
-      ? `¿Prefieres alguna marca en concreto? (${marcas.slice(0,4).join(", ")}${marcas.length>4?", ...":""})`
+      ? `¿Prefieres alguna marca en concreto? (${marcas.slice(0,3).join(", ")}${marcas.length>3?", ...":""})`
       : `¿Te interesa algún modelo o característica especial?`;
 
-    let listado = sim.slice(0, 4).map(p =>
+    let listado = sim.slice(0, 3).map(p =>
       `<div style="display:flex;flex-direction:column;align-items:center;margin-bottom:18px;">
-        <div style="text-align:center;width:100%;font-weight:600;font-size:15px;margin-bottom:4px;">${p.Brand} ${p.Model}</div>
-        <button onclick="window.open('${p.affiliateURL}','_blank')" style="display:flex;align-items:center;justify-content:center;background:#fff;border:2px solid #075E54;border-radius:10px;padding:7px 18px;cursor:pointer;color:#075E54;font-size:14px;font-weight:500;">
+        <div style="text-align:center;width:100%;font-weight:600;font-size:15px;margin-bottom:4px;color:#000;">${p.Brand} ${p.Model}</div>
+        <button onclick="window.open('${p.affiliateURL}','_blank')" style="display:flex;align-items:center;justify-content:center;background:#fff;border:2px solid #000;border-radius:10px;padding:7px 18px;cursor:pointer;color:#000;font-size:14px;font-weight:500;">
           <img src="${p.ImageURL}" alt="${p.Brand} ${p.Model}" style="width:34px;height:34px;object-fit:cover;border-radius:7px;margin-right:10px;">
           Más información
         </button>
@@ -114,9 +114,9 @@ function lookup_product(query) {
 
     return (
       `<div style="width:100%;max-width:370px;padding:0;margin:0 auto;">
-        <div style="margin-bottom:8px;">Estos productos pueden coincidir con tu búsqueda:</div>
+        <div style="margin-bottom:8px;color:#000;">Estos productos pueden coincidir con tu búsqueda:</div>
         ${listado}
-        <div style="padding:10px 0 0 0;font-size:14px;color:#075E54;">
+        <div style="padding:10px 0 0 0;font-size:14px;color:#000;">
           ${pregunta_acotar}
         </div>
       </div>`
@@ -124,7 +124,7 @@ function lookup_product(query) {
   }
 
   // No encontró nada
-  return `<div style="text-align:center;">No encontré ningún producto que coincida con tu búsqueda.<br>¿Puedes darme más detalles? ¿Marca, modelo, tipo de instrumento, etc.?</div>`;
+  return `<div style="text-align:center;color:#000;">No encontré ningún producto que coincida con tu búsqueda.<br>¿Puedes darme más detalles? ¿Marca, modelo, tipo de instrumento, etc.?</div>`;
 }
 
 const app = express();
@@ -169,7 +169,7 @@ app.post("/chat", async (req, res) => {
   return res.json({ reply: content });
 });
 
-// Búsqueda JSON para autocomplete (sigue igual)
+// Búsqueda JSON para autocomplete
 app.get("/products/search", (req, res) => {
   const q = (req.query.q || "").toLowerCase();
   const matches = products.filter(p =>

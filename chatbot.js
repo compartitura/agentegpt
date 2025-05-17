@@ -1,4 +1,3 @@
-// chatbot.js
 ;(function() {
   const avatarUrl = "https://www.compartitura.org/medias/images/captura-12.jpg";
   const isMobile  = window.innerWidth <= 600;
@@ -9,70 +8,26 @@
   fontLink.rel  = "stylesheet";
   document.head.appendChild(fontLink);
 
-  // Estilos
+  // Estilos: solo lo verde (bordes, botones, header) es ahora negro
   const style = document.createElement("style");
   style.textContent = `
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body, textarea, button { font-family: 'Inter', sans-serif; }
-  @keyframes bounce {
-    0%,100% { transform: translateY(0); }
-    50% { transform: translateY(-6px); }
-  }
-  #chatbot-toggle {
-    display: none;
-    position: fixed; bottom: 20px; right: 20px;
-    width: 80px; height: 80px; border-radius: 50%;
-    background: url(https://www.compartitura.org/medias/images/captura-12.jpg) center/cover no-repeat;
-    cursor: pointer; z-index: 10000;
-    box-shadow: 0 0 12px rgba(37,211,102,0.6);
-    animation: bounce 2s infinite;
-  }
-  #chatbot {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100vw !important;
-    min-width: 100vw !important;
-    height: 100vh !important;
-    min-height: 100vh !important;
-    max-width: 100vw !important;
-    max-height: 100vh !important;
-    background: #fff; border: 1px solid #ccc;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-    display: flex; flex-direction: column; z-index: 99999;
-    border-radius: 0 !important;
-    padding: 0 !important;
-  }
-  #chatbot.open { display: flex; }
-  #chatbot-header { display: flex; align-items: center; justify-content: space-between; padding: 10px; background: #075E54; color: #fff; }
-  #chatbot-header .left { display: flex; align-items: center; }
-  #chatbot-header img { width: 32px; height: 32px; border-radius: 50%; margin: 0 8px; }
-  #chatbot-header h4 { font-size: 16px; margin-right: auto; }
-  #chatbot-close, #menu-btn { background: transparent; border: none; color: #fff; cursor: pointer; }
-  #chatbot-close { font-size: 18px; }
-  #menu-btn { font-size: 24px; }
-  #quick-menu { position: absolute; top: 44px; right: 10px; background: #fff; border: 1px solid #ccc; box-shadow: 0 2px 4px rgba(0,0,0,0.2); list-style: none; padding: 5px 0; margin: 0; display: none; width: 220px; z-index: 10001; }
-  #quick-menu li { padding: 8px 12px; color: #000; cursor: pointer; }
-  #quick-menu li:hover { background: #f0f0f0; }
-  #chatbot-messages { flex: 1; padding: 10px; overflow-y: auto; background: #e5ddd5; }
-  .chat-message { margin-bottom: 10px; display: flex; }
-  .chat-message.user { justify-content: flex-end; }
-  .chat-bubble { display: inline-block; max-width: 80%; padding: 12px; border-radius: 16px; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); word-wrap: break-word; white-space: pre-wrap; }
-  .chat-message.user .chat-bubble { background: #dcf8c6; }
-  #chatbot-input-container { position: relative; }
-  #chatbot-input { width: 100%; height: 60px; border: none; border-top: 1px solid #ccc; padding: 12px; font-size: 16px; resize: none; outline: none; padding-right: 50px; }
-  #send-btn { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); width: 28px; height: 28px; background: url('https://www.compartitura.org/medias/images/enviar-1.png') center/cover no-repeat; cursor: pointer; display: none; }
-  html, body {
-    overscroll-behavior: none !important;
-    background: #fff !important;
-    height: 100vh !important;
-    max-height: 100vh !important;
-    width: 100vw !important;
-    overflow: hidden !important;
-    margin: 0 !important; padding: 0 !important;
-  }
-  @media (max-width: 600px) {
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body, textarea, button { font-family: 'Inter', sans-serif; }
+    @keyframes bounce {
+      0%,100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+    #chatbot-toggle {
+      display: none;
+      position: fixed; bottom: 20px; right: 20px;
+      width: 80px; height: 80px; border-radius: 50%;
+      background: url(${avatarUrl}) center/cover no-repeat;
+      cursor: pointer; z-index: 10000;
+      box-shadow: 0 0 12px rgba(0,0,0,0.6);
+      animation: bounce 2s infinite;
+    }
     #chatbot {
-      position: fixed !important;
+      position: fixed;
       top: 0; left: 0;
       width: 100vw !important;
       min-width: 100vw !important;
@@ -80,12 +35,32 @@
       min-height: 100vh !important;
       max-width: 100vw !important;
       max-height: 100vh !important;
-      z-index: 99999 !important;
-      overscroll-behavior: none !important;
+      background: #fff;
+      border: 1px solid #ccc;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+      display: flex; flex-direction: column; z-index: 99999;
       border-radius: 0 !important;
-      box-shadow: none !important;
       padding: 0 !important;
     }
+    #chatbot.open { display: flex; }
+    #chatbot-header { display: flex; align-items: center; justify-content: space-between; padding: 10px; background: #000; color: #fff; }
+    #chatbot-header .left { display: flex; align-items: center; }
+    #chatbot-header img { width: 32px; height: 32px; border-radius: 50%; margin: 0 8px; }
+    #chatbot-header h4 { font-size: 16px; margin-right: auto; }
+    #chatbot-close, #menu-btn { background: transparent; border: none; color: #000; cursor: pointer; }
+    #chatbot-close { font-size: 18px; }
+    #menu-btn { font-size: 24px; }
+    #quick-menu { position: absolute; top: 44px; right: 10px; background: #fff; border: 1px solid #000; box-shadow: 0 2px 4px rgba(0,0,0,0.2); list-style: none; padding: 5px 0; margin: 0; display: none; width: 220px; z-index: 10001; }
+    #quick-menu li { padding: 8px 12px; color: #000; cursor: pointer; }
+    #quick-menu li:hover { background: #f0f0f0; }
+    #chatbot-messages { flex: 1; padding: 10px; overflow-y: auto; background: #e5ddd5; }
+    .chat-message { margin-bottom: 10px; display: flex; }
+    .chat-message.user { justify-content: flex-end; }
+    .chat-bubble { display: inline-block; max-width: 80%; padding: 12px; border-radius: 16px; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); word-wrap: break-word; white-space: pre-wrap; }
+    .chat-message.user .chat-bubble { background: #dcf8c6; }
+    #chatbot-input-container { position: relative; }
+    #chatbot-input { width: 100%; height: 60px; border: none; border-top: 1px solid #ccc; padding: 12px; font-size: 16px; resize: none; outline: none; padding-right: 50px; }
+    #send-btn { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); width: 28px; height: 28px; background: url('https://www.compartitura.org/medias/images/enviar-1.png') center/cover no-repeat; cursor: pointer; display: none; color: #000; }
     html, body {
       overscroll-behavior: none !important;
       background: #fff !important;
@@ -95,9 +70,51 @@
       overflow: hidden !important;
       margin: 0 !important; padding: 0 !important;
     }
-  }
-`;
-
+    @media (max-width: 600px) {
+      #chatbot {
+        position: fixed !important;
+        top: 0; left: 0;
+        width: 100vw !important;
+        min-width: 100vw !important;
+        height: 100vh !important;
+        min-height: 100vh !important;
+        max-width: 100vw !important;
+        max-height: 100vh !important;
+        z-index: 99999 !important;
+        overscroll-behavior: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+      }
+      html, body {
+        overscroll-behavior: none !important;
+        background: #fff !important;
+        height: 100vh !important;
+        max-height: 100vh !important;
+        width: 100vw !important;
+        overflow: hidden !important;
+        margin: 0 !important; padding: 0 !important;
+      }
+      #chatbot-input-container {
+        position: fixed !important;
+        bottom: 0; left: 0;
+        width: 100vw !important;
+        background: #fff !important;
+        z-index: 10002;
+      }
+      #chatbot-input {
+        height: 52px !important;
+        font-size: 17px !important;
+        background: #fff !important;
+      }
+      #send-btn {
+        top: 52%;
+      }
+      #chatbot-messages {
+        padding-bottom: 70px !important;
+      }
+    }
+  `;
   document.head.appendChild(style);
 
   // HTML Structure
@@ -174,12 +191,6 @@
     const bub=document.createElement('div'); bub.className='chat-bubble'; bub.innerHTML=html;
     div.appendChild(bub); msgs.appendChild(div); msgs.scrollTop=msgs.scrollHeight;
   }
-
-if ('standalone' in window.navigator && !window.navigator.standalone && /iphone|ipad|ipod|android/i.test(window.navigator.userAgent)) {
-  setTimeout(() => {
-    alert('Para usar el chat a pantalla completa, agrega esta web a tu inicio desde el menú del navegador.');
-  }, 1200);
-}
 
   // Initial greeting
   addMessage('Hola, ¿en qué puedo ayudarte?');

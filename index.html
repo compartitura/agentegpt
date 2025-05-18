@@ -2,19 +2,850 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Compartitura</title>
-  <link rel="icon" href="/favicon.ico">
-  <!-- MODIFICADO PARA FULLSCREEN Y PWA -->
-  <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="##050505">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Compartitura</title>
+  <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:400,500&display=swap">
+  <style>
+    :root {
+      --primario: #2C3E50;
+      --secundario: #F5F0E6;
+      --acento: #D4AF37;
+      --acento2: #FFC107;
+      --fondo: #FAFAFA;
+      --texto: #212121;
+      --sidebar-width: 320px;
+    }
+    body {
+      margin: 0; padding: 0; background: var(--fondo);
+      font-family: 'Inter', sans-serif;
+      height: 100vh; width: 100vw; overflow: hidden;
+      color: var(--texto);
+    }
+    .wa-layout {
+      display: flex; height: 100vh; width: 100vw; background: var(--fondo);
+    }
+    .wa-nav {
+      width: 64px; background: var(--primario);
+      display: flex; flex-direction: column; align-items: center; z-index: 3;
+      padding-top: 18px;
+    }
+    .wa-nav .wa-logo-btn {
+      width: 42px; height: 42px; margin-bottom: 22px; border-radius: 14px;
+      background: transparent; display: flex; align-items: center; justify-content: center;
+      overflow: hidden; border: none;
+    }
+    .wa-nav .wa-logo-btn img {
+      width: 40px; height: 40px; border-radius: 8px; object-fit: contain; background: none;
+    }
+    .wa-nav .wa-nav-btn {
+      width: 42px; height: 42px; margin-bottom: 10px; border: none; background: none;
+      display: flex; align-items: center; justify-content: center; cursor: pointer;
+      border-radius: 13px; transition: background .16s;
+    }
+    .wa-nav .wa-nav-btn.active, .wa-nav .wa-nav-btn:hover {
+      background: var(--acento);
+    }
+    .wa-nav .wa-nav-btn svg {
+      width: 26px; height: 26px; display: block; color: #fff; fill: none; stroke: #fff; stroke-width: 2.1;
+    }
+    .wa-sidebar {
+      width: var(--sidebar-width); min-width: 210px; max-width: 340px;
+      background: var(--secundario);
+      display: flex; flex-direction: column; z-index: 2; position: relative;
+      box-shadow: 0 0 14px #e2e2e2;
+      border: none;
+    }
+    .wa-sidebar-titulo {
+      font-size: 20px; font-weight: 800; letter-spacing: 1px;
+      text-align: center; color: var(--primario);
+      padding: 20px 0 10px 0; background: var(--secundario);
+      border: none;
+    }
+    .wa-sidebar-search {
+      padding: 6px 18px 13px 18px; background: none;
+      position: relative;
+    }
+    .wa-sidebar-search input {
+      width: 100%; font-size: 15px; padding: 12px 38px 12px 46px; border-radius: 20px;
+      border: 1.5px solid var(--primario); background: #fff; outline: none;
+      color: var(--texto); transition: border .16s; box-sizing: border-box;
+      box-shadow: 0 2px 10px #ede6c4;
+    }
+    .wa-sidebar-search svg {
+      position: absolute; left: 25px; top: 20px; width: 18px; color: var(--primario);
+      pointer-events: none;
+    }
+    .wa-sidebar-filtros {
+      display: flex; gap: 9px; padding: 0 16px 7px 16px; background: none;
+    }
+    .wa-sidebar-filtros button {
+      flex: 1; border: none; border-radius: 13px; background: #fff;
+      color: var(--primario); font-weight: 600; font-size: 15px; padding: 7px 0;
+      cursor: pointer; transition: background .13s, color .13s;
+      border: 1.4px solid var(--acento2);
+      margin-bottom: 6px;
+    }
+    .wa-sidebar-filtros button.active, .wa-sidebar-filtros button:hover {
+      background: var(--acento); color: #fff;
+    }
+    .wa-sidebar-list {
+      flex: 1; overflow-y: auto; padding: 0 14px 16px 14px; background: none;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .wa-sidebar .wa-item {
+      background: #fff; border-radius: 10px; box-shadow: 0 1px 7px #efeae2;
+      padding: 12px 13px; font-size: 15px; color: var(--primario);
+      display: flex; align-items: center; gap: 12px; cursor: pointer; border: none;
+      transition: background .13s;
+    }
+    .wa-sidebar .wa-item:hover {
+      background: var(--acento2); color: #fff;
+    }
+    .wa-sidebar .wa-item img { width: 25px; height: 25px; border-radius: 6px; margin-left: auto; }
+    .wa-right {
+      width: var(--sidebar-width); min-width: 210px; max-width: 340px;
+      background: var(--secundario);
+      display: flex; flex-direction: column; z-index: 2; position: relative;
+      box-shadow: 0 0 14px #e2e2e2; border: none;
+    }
+    .wa-right-header {
+      font-size: 20px; font-weight: 800; letter-spacing: 1px;
+      text-align: center; color: var(--primario);
+      padding: 20px 0 10px 0; background: var(--secundario);
+      border: none;
+    }
+    .wa-right-content {
+      flex: 1; overflow-y: auto; padding: 0 14px 16px 14px; background: none;
+      display: flex; flex-direction: column; gap: 13px;
+    }
+    .wa-right .wa-item {
+      background: #fff; border-radius: 10px; box-shadow: 0 1px 7px #efeae2;
+      padding: 12px 13px; font-size: 15px; color: var(--primario);
+      display: flex; align-items: center; gap: 12px; cursor: pointer; border: none;
+      transition: background .13s;
+    }
+    .wa-right .wa-item:hover {
+      background: var(--acento2); color: #fff;
+    }
+    .wa-right .wa-item img { width: 25px; height: 25px; border-radius: 6px; margin-left: auto;}
+    .wa-main {
+      flex: 1 1 0%; display: flex; min-width: 0; height: 100vh; background: var(--fondo);
+    }
+    .wa-central {
+      flex: 1 1 0; display: flex; flex-direction: column; min-width: 0;
+      background: var(--fondo); align-items: stretch; position: relative;
+    }
+    .wa-central-header, .wa-chat-inputbar, .wa-central-content, .wa-tienda-wrap {
+      max-width: none !important;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+      width: 100% !important;
+      box-sizing: border-box;
+    }
+    .wa-central-header {
+      height: 66px; background: #fff; display: flex; align-items: center; gap: 13px;
+      padding: 0 28px; position: relative; z-index: 4; border: none;
+    }
+    .wa-central-title { font-size: 23px; font-weight: 800; color: var(--primario); flex: 1; letter-spacing: 1.2px;}
+    .wa-central-icon {
+      width: 58px; height: 58px; border-radius: 50%; background: #fff;
+      display: flex; align-items: center; justify-content: center;
+      border: 2.5px solid var(--acento); box-sizing: border-box;
+      box-shadow: 0 2px 10px #f1e3bb;
+    }
+    .wa-central-icon img { width: 44px; height: 44px; border-radius: 50%; }
+    .wa-tres-puntos {
+      background: none; border: none; cursor: pointer; margin-left: 8px;
+      display: flex; align-items: center; justify-content: center; padding: 3px 0 0 0;
+    }
+    .wa-tres-puntos svg { width: 9px; height: 32px; }
+    .wa-menu-dropdown {
+      display: none; position: absolute; top: 62px; right: 16px;
+      background: #fff; border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.13);
+      min-width: 230px; z-index: 99; padding: 0;
+    }
+    .wa-menu-dropdown li {
+      list-style: none; padding: 13px 24px; cursor: pointer; font-size: 15px;
+      color: #181818; border-bottom: 1px solid #f2f2f2;
+      transition: background .13s;
+    }
+    .wa-menu-dropdown li:last-child { border-bottom: none; }
+    .wa-menu-dropdown li:hover { background: #f7f7f7; }
+    /* --- TIENDA STACKING PARA BLOQUE INSTRUMENTOS --- */
+    .wa-central-content.wa-tienda-stack {
+      position: relative;
+      min-height: 0;
+      flex: 1;
+      width: 100%;
+      padding: 0;
+    }
+    .wa-central-content.wa-tienda-stack .wa-tienda-iframe {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 75vh;
+      z-index: 1;
+      width: 100%;
+      transition: opacity 0.2s;
+    }
+    .wa-central-content.wa-tienda-stack.tiene-mensajes .wa-tienda-iframe {
+      opacity: 0; pointer-events: none;
+    }
+    .wa-central-content.wa-tienda-stack .wa-bubble,
+    .wa-central-content.wa-tienda-stack .wa-bubble-content {
+      position: relative; z-index: 2;
+    }
+    #bloque-cecilia .wa-central-content {
+      height: calc(100vh - 67px);
+      max-height: calc(100vh - 67px);
+      overflow-y: auto;
+      padding-bottom: 67px; /* O un poco más si quieres más espacio */
+    }
+
+    .wa-bubble {
+      display: flex;
+      margin-bottom: 18px;
+      align-items: flex-end;
+      padding-left: 38px;
+      padding-right: 38px;
+    }
+    .wa-bubble.cecilia { justify-content: flex-start; }
+    .wa-bubble.user { justify-content: flex-end; }
+    .wa-bubble-content {
+      max-width: 90vw; background: #fff; border-radius: 18px;
+      padding: 15px 23px; font-size: 17px; box-shadow: 0 2px 8px #f2e6c5;
+      color: var(--primario); font-weight: 500;
+      margin: 0 0 0 0;
+    }
+    .wa-bubble.cecilia .wa-bubble-content { border-bottom-left-radius: 7px; }
+    .wa-bubble.user .wa-bubble-content { background: #FAE8C8; border-bottom-right-radius: 7px; color: var(--texto);}
+    .wa-tienda-wrap {
+      width: 100%; padding: 0; display: flex; flex-direction: column; flex: 1 1 0%; margin: 0;
+    }
+    .wa-tienda-wrap iframe {
+      width: 100%; height: 75vh; min-height: 260px; border: none; border-radius: 12px;
+      margin: 0; display: block; background: #fff; box-shadow: 0 2px 9px #ede6c4;
+    }
+    .wa-chat-inputbar {
+      background: #fff; position: absolute; left: 0; right: 0; bottom: 0;
+      width: 100%;
+      border-top: 2.5px solid var(--secundario); display: flex; align-items: center;
+      padding: 10px 13px; z-index: 5; gap: 0;
+      box-shadow: 0 -1px 13px #ede6c4; border-radius: 17px 17px 0 0;
+      justify-content: flex-start; margin: 0;
+    }
+    .wa-chat-inputbar .wa-icon-cecilia {
+      width: 36px; height: 36px; border-radius: 50%; background: #fff;
+      display: flex; align-items: center; justify-content: center;
+      margin-right: 12px; border: 2px solid var(--acento); box-sizing: border-box;
+      flex-shrink: 0;
+    }
+    .wa-chat-inputbar .wa-icon-cecilia img { width: 25px; height: 25px; border-radius: 50%; }
+    .wa-chat-inputbar .wa-input-wrap {
+      position: relative; flex: 1; display: flex; align-items: center;
+    }
+    .wa-chat-inputbar textarea {
+      width: 100%; border: none; border-radius: 17px; font-size: 16px;
+      padding: 13px 45px 13px 17px; background: var(--secundario); resize: none; outline: none;
+      min-height: 22px; max-height: 120px; color: var(--texto); font-weight: 500;
+      box-sizing: border-box;
+    }
+    .wa-btn-preguntas {
+      position: absolute; right: 48px; top: 50%; transform: translateY(-50%);
+      width: 33px; height: 33px; background: #fff; border-radius: 50%; border: none;
+      display: flex; align-items: center; justify-content: center; cursor: pointer;
+      box-shadow: 0 1px 3px #eaeaea;
+    }
+    .wa-btn-preguntas svg { width: 21px; height: 21px; color: #bbb;}
+    .wa-btn-enviar {
+      background: none; border: none; border-radius: 50%; margin-left: 16px; padding: 0;
+      width: 40px; height: 40px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+      box-shadow: none; transition: background .12s;
+    }
+    .wa-btn-enviar svg {
+      width: 36px; height: 36px; display: block;
+      fill: var(--primario);
+      transition: fill .15s;
+    }
+    .wa-btn-enviar:hover svg {
+      fill: var(--acento2);
+    }
+    .wa-escribiendo {
+      display: flex; align-items: center; margin-top: 8px; font-size: 15px; color: var(--acento); gap: 8px;
+    }
+    .wa-puntos-oscilantes {
+      display: flex; align-items: center; gap: 2px; height: 18px;
+      margin-right: 8px;
+    }
+    .wa-puntos-oscilantes span {
+      width: 7px; height: 7px; border-radius: 50%; background: var(--acento2); display: inline-block; animation: bounce 1s infinite alternate;
+    }
+    .wa-puntos-oscilantes span:nth-child(2){ animation-delay:.18s;}
+    .wa-puntos-oscilantes span:nth-child(3){ animation-delay:.34s;}
+    @keyframes bounce { to { transform: translateY(-7px);}
+    }
+    /* --- Botón reiniciar chat instrumentos --- */
+    .wa-reset-instrumentos {
+      position: absolute;
+      top: 11px;
+      right: 24px;
+      background: #fff;
+      border: 2px solid var(--acento);
+      border-radius: 8px;
+      color: var(--primario);
+      font-size: 14px;
+      font-weight: 700;
+      display: none;
+      align-items: center;
+      padding: 6px 13px 6px 10px;
+      cursor: pointer;
+      z-index: 9;
+      box-shadow: 0 2px 9px #ede6c4;
+      transition: background .13s, color .13s;
+      gap: 6px;
+    }
+    .wa-reset-instrumentos.active {
+      display: flex;
+    }
+    .wa-reset-instrumentos svg {
+      width: 20px; height: 20px; margin-right: 3px;
+      stroke: var(--acento2); fill: none; stroke-width: 2.5;
+    }
+    .wa-reset-instrumentos:hover {
+      background: var(--acento2); color: #fff;
+    }
+    .perfil-btn-nueva-consulta {
+      margin-top: 18px;
+      padding: 10px 0;
+      width: 100%;
+      border: none;
+      border-radius: 8px;
+      background: var(--acento2);
+      color: #fff;
+      font-weight: 700;
+      font-size: 16px;
+      cursor: pointer;
+      box-shadow: 0 1px 4px #eee7c1;
+      transition: background .14s;
+    }
+    .perfil-btn-nueva-consulta:hover {
+      background: var(--acento);
+      color: #fff;
+    }
+    @media (max-width: 900px) {
+      .wa-sidebar, .wa-right { width: 100vw; min-width: 0; max-width: 100vw; }
+      .wa-main { flex-direction: column; }
+      .wa-central { width: 100vw; }
+      .wa-chat-inputbar { width: 97vw; }
+      .wa-central-header, .wa-central-content, .wa-tienda-wrap { max-width: 100vw;}
+      .wa-reset-instrumentos { right: 13px; }
+      .wa-central-content.wa-tienda-stack .wa-tienda-iframe { height: 63vh; }
+      .wa-tienda-wrap iframe { height: 63vh; }
+    }
+    /* Panel lateral de información (perfil/ejemplo) */
+    .perfil-usuario-panel {
+      position: fixed; top: 0; right: -400px; width: 370px; height: 100vh;
+      background: var(--secundario); box-shadow: -3px 0 18px rgba(44,62,80,0.09);
+      z-index: 9999; display: flex; flex-direction: column; align-items: stretch;
+      border-left: 2.5px solid var(--primario); transition: right .3s;
+    }
+    .perfil-usuario-panel.active { right: 0; }
+    .perfil-content { padding: 36px 30px 24px 30px; display: flex; flex-direction: column; align-items: center; }
+    .perfil-cerrar { position: absolute; top: 17px; right: 17px; font-size: 29px; background: none; border: none; color: var(--primario); cursor: pointer;}
+    .perfil-img { width: 98px; height: 98px; border-radius: 50%; object-fit: cover; margin-bottom: 18px; border:3px solid var(--acento);}
+    #perfil-nombre { font-size: 22px; font-weight: 800; margin: 0 0 12px 0; color: var(--primario);}
+    .perfil-desc { font-size: 15.5px; color: #333; text-align: center; margin-bottom: 22px;}
+    .perfil-acciones { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+    .perfil-btn { display: block; width: 100%; border-radius: 8px; border: none; font-size: 16px;
+      padding: 11px; text-align: center; cursor: pointer; font-weight: 700; text-decoration: none; transition: background .12s;}
+    .perfil-btn-wa { background: var(--acento2); color: #fff; }
+    .perfil-btn-wa:hover { background: var(--acento); }
+    .perfil-btn-tel { background: #eaeaea; color: var(--primario);}
+    .perfil-btn-tel:hover { background: #d5d5d5; }
+    .perfil-btn-reportar { background: #fff2ee; color: #b22; border: 1.3px solid #b22;}
+    .perfil-btn-reportar:hover { background: #ffd3d3; }
+  </style>
 </head>
 <body>
-  <h1>Bienvenido a Compartitura</h1>
-  <p>partituras e instrumentos.</p>
+  <div class="wa-layout">
+    <!-- NAV -->
+    <nav class="wa-nav">
+      <div class="wa-logo-btn"><img src="https://www.compartitura.org/medias/images/logocompartiturapng.png" alt="Logo"></div>
+      <button class="wa-nav-btn active" id="nav-cecilia" title="Cecilia" onclick="showBlock('cecilia')">
+        <svg viewBox="0 0 24 24"><rect x="5" y="7" width="14" height="10" rx="4"/><circle cx="9" cy="12" r="1.3"/><circle cx="15" cy="12" r="1.3"/><rect x="11" y="2" width="2" height="3" rx="1"/></svg>
+      </button>
+      <button class="wa-nav-btn" id="nav-instrumentos" title="Instrumentos" onclick="showBlock('instrumentos')">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="14" r="6" stroke="#fff" stroke-width="2.1" fill="none"/><rect x="10" y="5" width="4" height="4" rx="2" stroke="#fff" stroke-width="2" fill="none"/><rect x="7" y="15" width="10" height="4" rx="2" stroke="#fff" stroke-width="2" fill="none"/></svg>
+      </button>
+      <button class="wa-nav-btn" id="nav-partituras" title="Partituras" onclick="showBlock('partituras')">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><line x1="7" y1="8" x2="17" y2="8"/><line x1="7" y1="12" x2="17" y2="12"/><line x1="7" y1="16" x2="13" y2="16"/></svg>
+      </button>
+      <button class="wa-nav-btn" id="nav-empleo" title="Empleo" onclick="showBlock('empleo')">
+        <svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="11" rx="2"/><rect x="8" y="4" width="8" height="3" rx="1"/></svg>
+      </button>
+      <button class="wa-nav-btn" id="nav-comunidad" title="Comunidad" onclick="showBlock('comunidad')">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4"/><ellipse cx="12" cy="17" rx="7" ry="4"/></svg>
+      </button>
+    </nav>
+    <!-- SIDEBAR IZQUIERDA -->
+    <aside class="wa-sidebar">
+      <div class="wa-sidebar-titulo">Compartitura</div>
+      <div class="wa-sidebar-search">
+        <svg viewBox="0 0 24 24" fill="none">
+          <circle cx="11" cy="11" r="8" stroke="#2C3E50" stroke-width="2"/><line x1="17" y1="17" x2="21" y2="21" stroke="#2C3E50" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <input type="text" placeholder="Buscar usuario, grupo o filtro..." id="wa-buscar" onkeyup="filtrarSidebar()">
+      </div>
+      <div class="wa-sidebar-filtros" id="wa-sidebar-filtros">
+        <button class="active" onclick="mostrarEjemplos('usuarios')">Usuarios</button>
+        <button onclick="mostrarEjemplos('grupos')">Grupos</button>
+      </div>
+      <div class="wa-sidebar-list" id="wa-sidebar-list"></div>
+    </aside>
+    <div class="wa-main">
+      <!-- BLOQUE CECILIA -->
+      <section class="wa-central" id="bloque-cecilia" style="display:flex;">
+        <header class="wa-central-header">
+          <span class="wa-central-icon">
+            <img src="https://www.compartitura.org/medias/images/captura-12.jpg" alt="Cecilia" />
+          </span>
+          <span class="wa-central-title">Cecilia</span>
+          <button class="wa-tres-puntos" onclick="toggleDropdown(event)">
+            <svg viewBox="0 0 8 32"><circle cx="4" cy="6" r="2" fill="#181818"/><circle cx="4" cy="16" r="2" fill="#181818"/><circle cx="4" cy="26" r="2" fill="#181818"/></svg>
+          </button>
+          <ul class="wa-menu-dropdown" id="wa-dropdown">
+            <li>Activar cuenta</li>
+            <li>Renovar cuenta</li>
+            <li>Suscripción premium</li>
+            <li>Pagos y facturas</li>
+          </ul>
+        </header>
+        <div class="wa-central-content" id="wa-chat-messages">
+          <div class="wa-bubble cecilia"><div class="wa-bubble-content">¡Hola! Soy Cecilia, ¿en qué puedo ayudarte hoy?</div></div>
+        </div>
+        <form class="wa-chat-inputbar" onsubmit="return enviarCecilia(event)">
+          <span class="wa-icon-cecilia"><img src="https://www.compartitura.org/medias/images/captura-12.jpg" alt="Cecilia"></span>
+          <span class="wa-input-wrap">
+            <textarea id="wa-input" placeholder="Escribe tu consulta a Cecilia..." rows="1"></textarea>
+            <button type="button" class="wa-btn-preguntas" onclick="abrirPreguntas('cecilia')">
+              <svg viewBox="0 0 28 20" fill="none"><rect x="2" y="3" width="24" height="2" rx="1" fill="#bbb"/><rect x="2" y="9" width="24" height="2" rx="1" fill="#bbb"/><rect x="2" y="15" width="24" height="2" rx="1" fill="#bbb"/></svg>
+            </button>
+            <!-- Tres puntitos oscilantes (ocultos por defecto) -->
+            <span id="wa-typing-dots" class="wa-puntos-oscilantes" style="display:none; position:absolute; right:48px; top:50%; transform:translateY(-50%);">
+              <span></span><span></span><span></span>
+            </span>
+          </span>
+          <button type="submit" class="wa-btn-enviar" aria-label="Enviar">
+            <svg viewBox="0 0 60 60"><polygon points="10,30 50,10 50,50" fill="var(--primario)"/></svg>
+          </button>
+        </form>
+      </section>
+      <!-- BLOQUE INSTRUMENTOS -->
+      <section class="wa-central" id="bloque-instrumentos" style="display:none;">
+        <header class="wa-central-header">
+          <span class="wa-central-icon">
+            <!-- ICONO INSTRUMENTOS SVG -->
+            <svg width="44" height="44" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="14" r="6" stroke="#2C3E50" stroke-width="2.1" fill="none"/>
+              <rect x="10" y="5" width="4" height="4" rx="2" stroke="#2C3E50" stroke-width="2" fill="none"/>
+              <rect x="7" y="15" width="10" height="4" rx="2" stroke="#2C3E50" stroke-width="2" fill="none"/>
+            </svg>
+          </span>
+          <span class="wa-central-title">Instrumentos</span>
+          <button class="wa-reset-instrumentos" id="reset-instrumentos-btn" onclick="resetInstrumentosChat()">
+            <svg viewBox="0 0 20 20"><path d="M14 4V1l5 5-5 5V7c-3.86 0-7 3.14-7 7h2a5 5 0 0 1 5-5h1"></path></svg>
+            Volver a instrumentos
+          </button>
+        </header>
+        <div class="wa-central-content wa-tienda-stack" id="wa-instrumentos-messages">
+          <iframe class="wa-tienda-iframe"
+            src="https://tiendathomannemiweb.vercel.app/"
+            style="border:none;border-radius:12px;margin:0;display:block;background:#fff;box-shadow:0 2px 9px #ede6c4;">
+          </iframe>
+          <!-- JS mete los mensajes aquí -->
+        </div>
+        <form class="wa-chat-inputbar" onsubmit="return mostrarChatBlock('instrumentos')">
+          <span class="wa-icon-cecilia"><img src="https://www.compartitura.org/medias/images/captura-12.jpg" alt="Cecilia"></span>
+          <span class="wa-input-wrap">
+            <textarea id="wa-input-instrumentos" placeholder="¿Alguna consulta sobre instrumentos y accesorios...?" rows="1"></textarea>
+            <button type="button" class="wa-btn-preguntas" onclick="abrirPreguntas('instrumentos')">
+              <svg viewBox="0 0 28 20" fill="none"><rect x="2" y="3" width="24" height="2" rx="1" fill="#bbb"/><rect x="2" y="9" width="24" height="2" rx="1" fill="#bbb"/><rect x="2" y="15" width="24" height="2" rx="1" fill="#bbb"/></svg>
+            </button>
+          </span>
+          <button type="submit" class="wa-btn-enviar" aria-label="Enviar">
+            <svg viewBox="0 0 60 60"><polygon points="10,30 50,10 50,50" fill="var(--primario)"/></svg>
+          </button>
+        </form>
+      </section>
+      <!-- BLOQUES PARTITURAS/EMPLEO/COMUNIDAD IGUAL QUE ANTES -->
+      <section class="wa-central" id="bloque-partituras" style="display:none;">
+        <header class="wa-central-header">
+          <span class="wa-central-icon">
+            <svg width="44" height="44" viewBox="0 0 24 24" fill="none">
+              <rect x="3" y="3" width="18" height="18" rx="3" stroke="#2C3E50" stroke-width="2"/>
+              <line x1="7" y1="8" x2="17" y2="8" stroke="#2C3E50" stroke-width="2"/>
+              <line x1="7" y1="12" x2="17" y2="12" stroke="#2C3E50" stroke-width="2"/>
+              <line x1="7" y1="16" x2="13" y2="16" stroke="#2C3E50" stroke-width="2"/>
+            </svg>
+          </span>
+          <span class="wa-central-title">Partituras</span>
+        </header>
+        <div class="wa-central-content wa-tienda-wrap" id="wa-partituras-messages" style="padding:0;"></div>
+        <form class="wa-chat-inputbar" onsubmit="return mostrarChatBlock('partituras')">
+          <span class="wa-icon-cecilia"><img src="https://www.compartitura.org/medias/images/captura-12.jpg" alt="Cecilia"></span>
+          <span class="wa-input-wrap">
+            <textarea id="wa-input-partituras" placeholder="¿Dudas o búsquedas de partituras?" rows="1"></textarea>
+            <button type="button" class="wa-btn-preguntas" onclick="abrirPreguntas('partituras')">
+              <svg viewBox="0 0 28 20" fill="none"><rect x="2" y="3" width="24" height="2" rx="1" fill="#bbb"/><rect x="2" y="9" width="24" height="2" rx="1" fill="#bbb"/><rect x="2" y="15" width="24" height="2" rx="1" fill="#bbb"/></svg>
+            </button>
+          </span>
+          <button type="submit" class="wa-btn-enviar" aria-label="Enviar">
+            <svg viewBox="0 0 60 60"><polygon points="10,30 50,10 50,50" fill="var(--primario)"/></svg>
+          </button>
+        </form>
+      </section>
+      <section class="wa-central" id="bloque-empleo" style="display:none;">
+        <header class="wa-central-header">
+          <span class="wa-central-icon">
+            <svg width="44" height="44" viewBox="0 0 24 24" fill="none">
+              <rect x="3" y="7" width="18" height="11" rx="2" stroke="#2C3E50" stroke-width="2"/>
+              <rect x="8" y="4" width="8" height="3" rx="1" stroke="#2C3E50" stroke-width="2"/>
+            </svg>
+          </span>
+          <span class="wa-central-title">Empleo</span>
+        </header>
+        <div class="wa-central-content wa-tienda-wrap" id="wa-empleo-messages" style="padding:0;"></div>
+        <form class="wa-chat-inputbar" onsubmit="return mostrarChatBlock('empleo')">
+          <span class="wa-icon-cecilia"><img src="https://www.compartitura.org/medias/images/captura-12.jpg" alt="Cecilia"></span>
+          <span class="wa-input-wrap">
+            <textarea id="wa-input-empleo" placeholder="¿Buscas empleo musical o necesitas músicos?" rows="1"></textarea>
+            <button type="button" class="wa-btn-preguntas" onclick="abrirPreguntas('empleo')">
+              <svg viewBox="0 0 28 20" fill="none"><rect x="2" y="3" width="24" height="2" rx="1" fill="#bbb"/><rect x="2" y="9" width="24" height="2" rx="1" fill="#bbb"/><rect x="2" y="15" width="24" height="2" rx="1" fill="#bbb"/></svg>
+            </button>
+          </span>
+          <button type="submit" class="wa-btn-enviar" aria-label="Enviar">
+            <svg viewBox="0 0 60 60"><polygon points="10,30 50,10 50,50" fill="var(--primario)"/></svg>
+          </button>
+        </form>
+      </section>
+      <section class="wa-central" id="bloque-comunidad" style="display:none;">
+        <header class="wa-central-header">
+          <span class="wa-central-icon">
+            <svg width="44" height="44" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="9" r="4" stroke="#2C3E50" stroke-width="2"/>
+              <ellipse cx="12" cy="17" rx="7" ry="4" stroke="#2C3E50" stroke-width="2"/>
+            </svg>
+          </span>
+          <span class="wa-central-title">Comunidad</span>
+        </header>
+        <div class="wa-central-content wa-tienda-wrap" id="wa-comunidad-messages" style="padding:0;"></div>
+        <form class="wa-chat-inputbar" onsubmit="return mostrarChatBlock('comunidad')">
+          <span class="wa-icon-cecilia"><img src="https://www.compartitura.org/medias/images/captura-12.jpg" alt="Cecilia"></span>
+          <span class="wa-input-wrap">
+            <textarea id="wa-input-comunidad" placeholder="¿Dudas, consultas o propuestas para la comunidad?" rows="1"></textarea>
+            <button type="button" class="wa-btn-preguntas" onclick="abrirPreguntas('comunidad')">
+              <svg viewBox="0 0 28 20" fill="none"><rect x="2" y="3" width="24" height="2" rx="1" fill="#bbb"/><rect x="2" y="9" width="24" height="2" rx="1" fill="#bbb"/><rect x="2" y="15" width="24" height="2" rx="1" fill="#bbb"/></svg>
+            </button>
+          </span>
+          <button type="submit" class="wa-btn-enviar" aria-label="Enviar">
+            <svg viewBox="0 0 60 60"><polygon points="10,30 50,10 50,50" fill="var(--primario)"/></svg>
+          </button>
+        </form>
+      </section>
+    </div>
+    <!-- Columna derecha -->
+    <aside class="wa-right">
+      <div class="wa-right-header" id="wa-right-header">Opciones</div>
+      <div class="wa-right-content" id="wa-right-content">
+        <div class="wa-item">Info relevante para prueba</div>
+      </div>
+    </aside>
+  </div>
+  <!-- Panel lateral de usuario/grupo -->
+  <div id="perfil-usuario-panel" class="perfil-usuario-panel">
+    <div class="perfil-content">
+      <button class="perfil-cerrar" onclick="cerrarPerfil()">×</button>
+      <img id="perfil-img" class="perfil-img" src="" alt="Perfil">
+      <h2 id="perfil-nombre">Nombre</h2>
+      <div id="perfil-descripcion" class="perfil-desc">Descripción.</div>
+      <div class="perfil-acciones" id="perfil-acciones"></div>
+    </div>
+  </div>
+  <script>
+    // --- USUARIOS Y GRUPOS DE PRUEBA ---
+    const ceciliaUser = {
+      nombre: "Cecilia (Agente IA)",
+      instrumento: "Asistente virtual, IA musical. Consulta cualquier duda.",
+      img: "https://www.compartitura.org/medias/images/captura-12.jpg",
+      esCecilia: true
+    };
+    const usuariosEjemplo = [
+      ceciliaUser, // Cecilia primero
+      { nombre: "Juan Pérez", instrumento: "Clarinete", img: "https://randomuser.me/api/portraits/men/32.jpg" },
+      { nombre: "María Álvarez", instrumento: "Saxo", img: "https://randomuser.me/api/portraits/women/65.jpg" },
+      { nombre: "Carlos Romero", instrumento: "Trompeta", img: "https://randomuser.me/api/portraits/men/12.jpg" },
+      { nombre: "Ana Morales", instrumento: "Violín", img: "https://randomuser.me/api/portraits/women/24.jpg" },
+      { nombre: "Pedro Sánchez", instrumento: "Tuba", img: "https://randomuser.me/api/portraits/men/53.jpg" },
+      { nombre: "Laura Gómez", instrumento: "Flauta", img: "https://randomuser.me/api/portraits/women/32.jpg" },
+      { nombre: "Javier García", instrumento: "Batería", img: "https://randomuser.me/api/portraits/men/29.jpg" },
+      { nombre: "Carmen Ruiz", instrumento: "Oboe", img: "https://randomuser.me/api/portraits/women/45.jpg" },
+      { nombre: "Antonio Torres", instrumento: "Contrabajo", img: "https://randomuser.me/api/portraits/men/15.jpg" },
+      { nombre: "Beatriz Herrera", instrumento: "Piano", img: "https://randomuser.me/api/portraits/women/36.jpg" },
+      { nombre: "Sergio López", instrumento: "Trompa", img: "https://randomuser.me/api/portraits/men/40.jpg" },
+      { nombre: "Raquel Díaz", instrumento: "Viola", img: "https://randomuser.me/api/portraits/women/46.jpg" },
+      { nombre: "Pablo Molina", instrumento: "Trombón", img: "https://randomuser.me/api/portraits/men/56.jpg" },
+      { nombre: "Marta Ortega", instrumento: "Saxofón", img: "https://randomuser.me/api/portraits/women/30.jpg" },
+      { nombre: "Daniel Ruiz", instrumento: "Guitarra", img: "https://randomuser.me/api/portraits/men/11.jpg" },
+      { nombre: "Patricia Sáez", instrumento: "Cello", img: "https://randomuser.me/api/portraits/women/67.jpg" },
+      { nombre: "Hugo Jiménez", instrumento: "Fagot", img: "https://randomuser.me/api/portraits/men/21.jpg" },
+      { nombre: "Lucía Castro", instrumento: "Percusión", img: "https://randomuser.me/api/portraits/women/59.jpg" },
+      { nombre: "Álvaro Soto", instrumento: "Trompeta", img: "https://randomuser.me/api/portraits/men/28.jpg" },
+      { nombre: "Elena Vega", instrumento: "Flauta travesera", img: "https://randomuser.me/api/portraits/women/22.jpg" },
+      { nombre: "Manuel Rey", instrumento: "Barítono", img: "https://randomuser.me/api/portraits/men/61.jpg" },
+      { nombre: "Nuria Esteban", instrumento: "Oboe", img: "https://randomuser.me/api/portraits/women/66.jpg" }
+    ];
+    const gruposEjemplo = [
+      { nombre: "Directores", tipo: "Grupo", img: "https://cdn-icons-png.flaticon.com/512/3595/3595455.png" },
+      { nombre: "Trombonistas", tipo: "Grupo", img: "https://cdn-icons-png.flaticon.com/512/3595/3595498.png" },
+      { nombre: "Clarinetistas", tipo: "Grupo", img: "https://cdn-icons-png.flaticon.com/512/3595/3595480.png" },
+      { nombre: "Trompetistas", tipo: "Grupo", img: "https://cdn-icons-png.flaticon.com/512/3595/3595503.png" },
+      { nombre: "Saxofonistas", tipo: "Grupo", img: "https://cdn-icons-png.flaticon.com/512/3595/3595472.png" },
+      { nombre: "Flautistas", tipo: "Grupo", img: "https://cdn-icons-png.flaticon.com/512/3595/3595476.png" },
+      { nombre: "Percusionistas", tipo: "Grupo", img: "https://cdn-icons-png.flaticon.com/512/3595/3595460.png" },
+      { nombre: "Violinistas", tipo: "Grupo", img: "https://cdn-icons-png.flaticon.com/512/3595/3595466.png" },
+      { nombre: "Violonchelistas", tipo: "Grupo", img: "https://cdn-icons-png.flaticon.com/512/3595/3595487.png" },
+      { nombre: "Trompistas", tipo: "Grupo", img: "https://cdn-icons-png.flaticon.com/512/3595/3595482.png" },
+      { nombre: "Oboístas", tipo: "Grupo", img: "https://cdn-icons-png.flaticon.com/512/3595/3595467.png" },
+      { nombre: "Pianistas", tipo: "Grupo", img: "https://cdn-icons-png.flaticon.com/512/3595/3595495.png" },
+      { nombre: "Bandas Infantiles", tipo: "Grupo", img: "https://cdn-icons-png.flaticon.com/512/3595/3595478.png" },
+      { nombre: "Coros", tipo: "Grupo", img: "https://cdn-icons-png.flaticon.com/512/3595/3595453.png" },
+      { nombre: "Comunidad Compartitura", tipo: "Grupo", img: "https://cdn-icons-png.flaticon.com/512/3595/3595456.png" },
+      { nombre: "Bandas Adultos", tipo: "Grupo", img: "https://cdn-icons-png.flaticon.com/512/3595/3595457.png" },
+      { nombre: "Escuelas Municipales", tipo: "Grupo", img: "https://cdn-icons-png.flaticon.com/512/3595/3595459.png" },
+      { nombre: "Pruebas Acceso", tipo: "Grupo", img: "https://cdn-icons-png.flaticon.com/512/3595/3595484.png" },
+      { nombre: "Enseñanza Superior", tipo: "Grupo", img: "https://cdn-icons-png.flaticon.com/512/3595/3595490.png" },
+      { nombre: "Orquestas", tipo: "Grupo", img: "https://cdn-icons-png.flaticon.com/512/3595/3595488.png" },
+      { nombre: "Grupos de Jazz", tipo: "Grupo", img: "https://cdn-icons-png.flaticon.com/512/3595/3595491.png" },
+      { nombre: "Docentes", tipo: "Grupo", img: "https://cdn-icons-png.flaticon.com/512/3595/3595496.png" }
+    ];
+    let filtroSidebar = "usuarios";
+    let ultimoPerfilAbierto = null;
+    function mostrarEjemplos(tipo){
+      filtroSidebar = tipo;
+      document.querySelectorAll('.wa-sidebar-filtros button').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.wa-sidebar-filtros button')[tipo==='usuarios'?0:1].classList.add('active');
+      renderSidebarList("");
+    }
+    function renderSidebarList(filtro) {
+      let html = "";
+      if(filtroSidebar==='usuarios'){
+        usuariosEjemplo.forEach(u=>{
+          html += `<div class="wa-item" onclick="abrirPerfil('${u.nombre.replace(/'/g,"\\'")}')">${u.nombre}${u.esCecilia ? '' : ' ('+u.instrumento+')'}<img src="${u.img}"></div>`;
+        });
+      } else {
+        gruposEjemplo.forEach(g=>{
+          if(!filtro || g.nombre.toLowerCase().includes(filtro))
+            html += `<div class="wa-item" onclick="abrirPerfil('${g.nombre.replace(/'/g,"\\'")}')">${g.nombre}<img src="${g.img}"></div>`;
+        });
+      }
+      document.getElementById('wa-sidebar-list').innerHTML = html;
+    }
+    function filtrarSidebar() {
+      const val = document.getElementById('wa-buscar').value.trim().toLowerCase();
+      renderSidebarList(val);
+    }
+    function abrirPerfil(nombre) {
+      // Cerrar si el usuario ya está abierto
+      if (ultimoPerfilAbierto === nombre && document.getElementById('perfil-usuario-panel').classList.contains('active')) {
+        cerrarPerfil();
+        ultimoPerfilAbierto = null;
+        return;
+      }
+      let found = usuariosEjemplo.concat(gruposEjemplo).find(u=>u.nombre===nombre);
+      if(!found) return;
+      document.getElementById('perfil-img').src = found.img;
+      document.getElementById('perfil-nombre').innerText = found.nombre;
+      document.getElementById('perfil-descripcion').innerText = found.instrumento ? `Instrumento: ${found.instrumento}` : `Grupo de ${found.nombre}`;
+      let acciones = '';
+      if(found.esCecilia){
+        acciones = `<div class="perfil-btn" style="background:#fff3cd;color:#856404;font-weight:700;">¡Soy tu agente IA! Puedes consultarme lo que quieras sobre música, instrumentos, partituras, empleo y más.</div>
+        <button class="perfil-btn-nueva-consulta" onclick="showBlock('cecilia');cerrarPerfil();">Nueva consulta</button>`;
+      } else if(filtroSidebar==='usuarios'){
+        acciones = `<a class="perfil-btn perfil-btn-wa" href="https://wa.me/34600123456" target="_blank">Contactar WhatsApp</a>
+        <a class="perfil-btn perfil-btn-tel" href="tel:34600123456">Llamar</a>
+        <button class="perfil-btn perfil-btn-reportar" onclick="reportarUsuario()">Reportar usuario/grupo</button>`;
+      } else {
+        acciones = `<a class="perfil-btn perfil-btn-wa" href="https://wa.me/34600123456" target="_blank">Acceder a grupo</a>
+        <button class="perfil-btn perfil-btn-reportar" onclick="reportarUsuario()">Reportar grupo</button>`;
+      }
+      document.getElementById('perfil-acciones').innerHTML = acciones;
+      document.getElementById('perfil-usuario-panel').classList.add('active');
+      ultimoPerfilAbierto = nombre;
+    }
+    function cerrarPerfil() {
+      document.getElementById('perfil-usuario-panel').classList.remove('active');
+      ultimoPerfilAbierto = null;
+    }
+    function reportarUsuario() {
+      alert("¡Gracias! El equipo revisará el perfil por posibles estafas o problemas.");
+      cerrarPerfil();
+    }
+    // ------ CHAT DE CECILIA CON TRES PUNTITOS ANIMADOS -----
+    function activarBotonesMarcaCecilia() {
+  document.querySelectorAll('#wa-chat-messages .marca-busqueda-btn:not([data-listener])').forEach(btn => {
+    btn.setAttribute('data-listener', '1');
+    btn.addEventListener('click', function(e){
+      e.preventDefault();
+      var msg = btn.getAttribute('data-query');
+      var input = document.getElementById('wa-input');
+      if(input){
+        input.value = msg;
+        var form = input.closest('form');
+        if(form){
+          var enviarBtn = form.querySelector('.wa-btn-enviar');
+          if(enviarBtn){
+            setTimeout(function(){ enviarBtn.click(); }, 50);
+          } else {
+            setTimeout(function(){ form.submit(); }, 70);
+          }
+        }
+      }
+    });
+  });
+}
 
-  <!-- Carga el chat -->
-  <script src="chatbot.js"></script>
+    function enviarCecilia(event){
+  event.preventDefault();
+  let input = document.getElementById('wa-input');
+  let val = input.value.trim();
+  if(!val) return false;
+  let chatCont = document.getElementById('wa-chat-messages');
+
+  // Añade burbuja de usuario
+  chatCont.innerHTML += `<div class="wa-bubble user"><div class="wa-bubble-content">${val}</div></div>`;
+
+  // Añade burbuja de cecilia con puntitos oscilantes
+  const dotsID = "cecilia-typing-dots-" + Date.now();
+  chatCont.innerHTML += `
+    <div class="wa-bubble cecilia" id="${dotsID}">
+      <div class="wa-bubble-content" style="min-width:70px;">
+        <span class="wa-puntos-oscilantes">
+          <span></span><span></span><span></span>
+        </span>
+      </div>
+    </div>
+  `;
+  input.value = "";
+  chatCont.scrollTop = chatCont.scrollHeight;
+
+  // Marca tiempo de inicio
+  const startTime = Date.now();
+
+  fetch('/chat', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ message: val })
+  })
+  .then(resp => resp.json())
+  .then(data => {
+    // Calcula cuánto tiempo esperar para simular
+    const minDelay = 1600; // milisegundos
+    const elapsed = Date.now() - startTime;
+    const wait = Math.max(0, minDelay - elapsed);
+
+    setTimeout(function(){
+      // Reemplaza los puntitos por la respuesta real de Cecilia
+      const dotsBubble = document.getElementById(dotsID);
+      if(dotsBubble) {
+        dotsBubble.innerHTML = `<div class="wa-bubble-content">${data.reply}</div>`;
+        activarBotonesMarcaCecilia(); // ¡ACTIVA los botones de marca nuevos!
+      }
+      chatCont.scrollTop = chatCont.scrollHeight;
+    }, wait);
+  })
+  .catch(err => {
+    const dotsBubble = document.getElementById(dotsID);
+    if(dotsBubble) {
+      dotsBubble.innerHTML = `<div class="wa-bubble-content">Error al conectar con la IA.</div>`;
+      activarBotonesMarcaCecilia();
+    }
+    chatCont.scrollTop = chatCont.scrollHeight;
+  });
+
+  return false;
+}
+
+    // ------ CHAT DE BLOQUES ------
+    function mostrarChatBlock(bloque){
+      let input = document.getElementById('wa-input-'+bloque);
+      let val = input.value.trim();
+      if(!val) return false;
+      let chatCont = document.getElementById('wa-'+bloque+'-messages');
+      if(bloque==="instrumentos") {
+        chatCont.classList.add("tiene-mensajes");
+        document.getElementById('reset-instrumentos-btn').classList.add('active');
+      }
+      let msgHTML = `<div class="wa-bubble user"><div class="wa-bubble-content">${val}</div></div>
+      <div class="wa-bubble cecilia"><div class="wa-bubble-content">Cecilia responde a: ${val}</div></div>`;
+      chatCont.innerHTML += msgHTML;
+      input.value = "";
+      chatCont.scrollTop = chatCont.scrollHeight;
+      return false;
+    }
+    function resetInstrumentosChat(){
+      let chatCont = document.getElementById('wa-instrumentos-messages');
+      chatCont.innerHTML = `<iframe class="wa-tienda-iframe" src="https://tiendathomannemiweb.vercel.app/" style="border:none;border-radius:12px;margin:0;display:block;background:#fff;box-shadow:0 2px 9px #ede6c4;"></iframe>`;
+      chatCont.classList.remove("tiene-mensajes");
+      document.getElementById('reset-instrumentos-btn').classList.remove('active');
+    }
+    // Cambia de bloque y limpia el chat de los bloques no-cecilia
+    function showBlock(bloque) {
+      ['cecilia','instrumentos','partituras','empleo','comunidad'].forEach(b => {
+        let el = document.getElementById('bloque-'+b);
+        if (el) el.style.display = (b===bloque ? 'flex':'none');
+        let nav = document.getElementById('nav-'+b);
+        if(nav) nav.classList.toggle('active', b===bloque);
+        // --- SOLO PARA BLOQUE INSTRUMENTOS (TIENDA OVERLAY) ---
+        if(b==="instrumentos" && el) {
+          let c = el.querySelector('.wa-central-content');
+          if(c) {
+            c.innerHTML = `<iframe class="wa-tienda-iframe" src="https://tiendathomannemiweb.vercel.app/" style="border:none;border-radius:12px;margin:0;display:block;background:#fff;box-shadow:0 2px 9px #ede6c4;"></iframe>`;
+            c.classList.remove("tiene-mensajes");
+            document.getElementById('reset-instrumentos-btn').classList.remove('active');
+          }
+        } else if (b!=='cecilia' && el) {
+          let c = el.querySelector('.wa-central-content');
+          if(c) c.innerHTML = "";
+        }
+      });
+      cerrarPerfil();
+      mostrarEjemplos('usuarios');
+    }
+    // Enter para enviar, Shift+Enter para salto de línea
+    document.addEventListener('DOMContentLoaded', () => {
+      ['wa-input','wa-input-instrumentos','wa-input-partituras','wa-input-empleo','wa-input-comunidad'].forEach(id => {
+        const el = document.getElementById(id);
+        if(el) {
+          el.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault();
+              this.form.querySelector('.wa-btn-enviar').click();
+            }
+          });
+        }
+      });
+    });
+    function abrirPreguntas(bloque){
+      alert('Aquí irían preguntas frecuentes sobre: ' + bloque);
+    }
+    function toggleDropdown(e){
+      e.stopPropagation();
+      let menu = e.currentTarget.nextElementSibling;
+      menu.style.display = menu.style.display==="block" ? "none" : "block";
+      document.addEventListener("click", ()=>{ menu.style.display="none"; }, {once:true});
+    }
+    mostrarEjemplos('usuarios');
+    showBlock('cecilia');
+  </script>
 </body>
 </html>
-

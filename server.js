@@ -97,31 +97,176 @@ function lookup_product(query) {
   const sim = productos_con_matches.map(obj => obj.p);
 
   if (sim.length > 0) {
-    const marcas = [...new Set(sim.map(p => p.Brand).filter(Boolean))];
-    let pregunta_acotar = marcas.length > 1
-      ? `¿Prefieres alguna marca en concreto? (${marcas.slice(0,3).join(", ")}${marcas.length>3?", ...":""})`
-      : `¿Te interesa algún modelo o característica especial?`;
-
-    let listado = sim.slice(0, 3).map(p =>
-      `<div style="display:flex;flex-direction:column;align-items:center;margin-bottom:18px;">
-        <div style="text-align:center;width:100%;font-weight:600;font-size:15px;margin-bottom:4px;color:#000;">${p.Brand} ${p.Model}</div>
-        <button onclick="window.open('${p.affiliateURL}','_blank')" style="display:flex;align-items:center;justify-content:center;background:#fff;border:2px solid #000;border-radius:10px;padding:7px 18px;cursor:pointer;color:#000;font-size:14px;font-weight:500;">
-          <img src="${p.ImageURL}" alt="${p.Brand} ${p.Model}" style="width:34px;height:34px;object-fit:cover;border-radius:7px;margin-right:10px;">
-          Más información
-        </button>
-      </div>`
-    ).join("");
-
-    return (
-      `<div style="width:100%;max-width:370px;padding:0;margin:0 auto;">
-        <div style="margin-bottom:8px;color:#000;">Estos productos pueden coincidir con tu búsqueda:</div>
-        ${listado}
-        <div style="padding:10px 0 0 0;font-size:14px;color:#000;">
-          ${pregunta_acotar}
-        </div>
-      </div>`
-    );
+  // Detecta el instrumento principal de la consulta
+  let instrumentoBuscado = '';
+  const instrumentos = ['saxofón','saxofon','saxophone','trompeta','trompete','trumpet','piano','violin','violín','guitarra','flauta','clarinete','batería','bateria','percusión','oboe','trompa','trombón','trombon','fagot','tuba','contrabajo','viola','cello','barítono','teclado'];
+  for(let inst of instrumentos) {
+    if((query.toLowerCase()).includes(inst)) {
+      instrumentoBuscado = inst.charAt(0).toUpperCase() + inst.slice(1).toLowerCase();
+      break;
+    }
   }
+
+  const marcas = [...new Set(sim.map(p => p.Brand).filter(Boolean))];
+  let pregunta_acotar = '';
+  if (marcas.length > 1) {
+    pregunta_acotar = `¿Prefieres alguna marca${instrumentoBuscado ? ' de "'+instrumentoBuscado+'"' : ''} en concreto?`;
+  } else {
+    pregunta_acotar = `¿Te interesa algún modelo o característica especial?`;
+  }
+
+  // Botones de marcas sugeridas para ese instrumento
+  let marcasBtns = '';
+  if (marcas.length > 1 && instrumentoBuscado) {
+    marcasBtns = 
+    `<div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px 13px;margin-top:13px;justify-content:center;" id="marcas-btns-cecilia">
+      <span style="color:#222;font-size:15px;font-weight:700;margin-right:9px;">Nuestras marcas en la categoría:</span>
+      ${marcas.slice(0,4).map(m =>
+        `<button class="marca-busqueda-btn" data-query="${instrumentoBuscado} ${m}" style="background:#fff;color:#181818;border:2px solid #222;border-radius:8px;padding:7px 16px;font-size:14px;cursor:pointer;font-weight:600;box-shadow:none;transition:background .13s, color .13s;">
+          ${m}
+        </button>`
+      ).join('')}
+    </div>`;
+  }
+
+  // Productos en paralelo (máximo 4 columnas, responsive), cada card es un <a>
+  let listado = `<div class="cecilia-productos-grid" style="
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 18px 16px;
+    margin-bottom:18px;
+    background:none;
+  ">` +
+    sim.slice(0, 4).map(p =>
+    `<a href="${p.affiliateURL}" target="_blank" style="
+      flex: 1 1 195px; 
+      max-width: 225px; 
+      min-width: 165px;
+      background: #111; 
+      border:2.5px solid var(--acento,#D4AF37); 
+      border-radius:18px;
+      padding:15px 7px 14px 7px; 
+      display:flex; flex-direction:column; align-items:center; 
+      box-shadow:0 4px 20px #000b;
+      min-height: 350px;
+      text-decoration: none;
+      transition: box-shadow .22s cubic-bezier(.21,1.2,.32,1), transform .19s;
+      position:relative;
+      cursor:pointer;
+      outline:none;
+    " onmouseover="this.style.boxShadow='0 9px 32px #222a, 0 2px 8px #D4AF37'; this.style.transform='translateY(-4px)';" 
+       onmouseout="this.style.boxShadow='0 4px 20px #000b'; this.style.transform='none';">
+      <div style="
+        width:100%;
+        background:#fff;
+        border:2px solid var(--acento,#D4AF37);
+        border-radius:14px;
+        padding:0 0 14px 0;
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        box-shadow:none;
+        margin-bottom:7px;
+      ">
+        <div style="
+          font-weight:800;
+          font-size:16px;
+          color:var(--primario,#2C3E50);
+          margin-top:10px;
+          margin-bottom:7px;
+          text-align:center;
+        ">${p.Brand} ${p.Model}</div>
+        <img src="${p.ImageURL}" alt="${p.Brand} ${p.Model}" style="
+          width:112px;
+          height:112px;
+          object-fit:cover;
+          border-radius:11px;
+          margin-bottom:0;
+          box-shadow:none;
+        ">
+        ${p.Description ? `<div style="
+          font-size:14px;
+          color:var(--primario,#2C3E50);
+          margin:11px 0 0 0;
+          text-align:center;
+          max-width:97%;
+        ">${p.Description}</div>` : ''}
+      </div>
+      <div style="
+        margin-top:auto;
+        width: 100%;
+        display:flex;
+        justify-content:center;
+        align-items:end;
+      ">
+        <div style="
+          background:#fff;
+          color:#181818;
+          font-weight:700;
+          padding:7px 18px;
+          font-size:14px;
+          border:2px solid var(--acento,#D4AF37);
+          border-radius:9px;
+          text-decoration:none;
+          box-shadow:none;
+          transition:background 0.13s, color 0.13s;
+          width: 90%;
+          text-align:center;
+          margin-bottom:0;
+          margin-top:10px;
+          pointer-events:none;
+          user-select:none;
+        ">
+          Más información
+        </div>
+      </div>
+    </a>`
+  ).join('') + `</div>`;
+
+  return (
+    `<div style="width:100%;max-width:950px;padding:0;margin:0 auto;">
+      <div style="margin-bottom:12px;color:var(--acento,#D4AF37);font-size:19px;font-weight:800;text-align:center;">
+        Productos destacados para tu búsqueda:
+      </div>
+      ${listado}
+      <div style="padding:8px 0 0 0;font-size:15px;color:#fff;font-weight:600;text-align:center;">
+        ${pregunta_acotar}
+        ${marcasBtns}
+      </div>
+    </div>
+    <script>
+    // Botones de marcas: ahora usan event delegation robusto y click real en el botón de enviar
+    setTimeout(function(){
+      var grid = document.getElementById('marcas-btns-cecilia');
+      if(grid && !grid.dataset.listener){
+        grid.addEventListener('click', function(e){
+          var btn = e.target.closest('.marca-busqueda-btn');
+          if(btn){
+            var msg = btn.getAttribute('data-query');
+            var input = document.getElementById('wa-input');
+            if(input){
+              input.value = msg;
+              // Busca el botón de enviar (submit) dentro del mismo formulario:
+              var form = input.closest('form');
+              if(form){
+                var enviarBtn = form.querySelector('.wa-btn-enviar');
+                if(enviarBtn){
+                  setTimeout(function(){ enviarBtn.click(); }, 60);
+                } else {
+                  setTimeout(function(){ form.submit(); }, 80);
+                }
+              }
+            }
+          }
+        });
+        grid.dataset.listener = "1";
+      }
+    }, 120);
+    </script>
+    `
+  );
+}
 
   // No encontró nada
   return `<div style="text-align:center;color:#000;">No encontré ningún producto que coincida con tu búsqueda.<br>¿Puedes darme más detalles? ¿Marca, modelo, tipo de instrumento, etc.?</div>`;

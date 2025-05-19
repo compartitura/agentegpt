@@ -717,24 +717,54 @@
       document.querySelectorAll('.wa-sidebar-filtros button')[tipo==='usuarios'?0:1].classList.add('active');
       renderSidebarList("");
     }
-    function renderSidebarList(filtro) {
-      let html = "";
-      if(filtroSidebar==='usuarios'){
-        usuariosEjemplo.forEach(u=>{
-          html += `<div class="wa-item" onclick="abrirPerfil('${u.nombre.replace(/'/g,"\\'")}')">${u.nombre}${u.esCecilia ? '' : ' ('+u.instrumento+')'}<img src="${u.img}"></div>`;
-        });
-      } else {
-        gruposEjemplo.forEach(g=>{
-          if(!filtro || g.nombre.toLowerCase().includes(filtro))
-            html += `<div class="wa-item" onclick="abrirPerfil('${g.nombre.replace(/'/g,"\\'")}')">${g.nombre}<img src="${g.img}"></div>`;
-        });
-      }
-      document.getElementById('wa-sidebar-list').innerHTML = html;
-    }
-    function filtrarSidebar() {
-      const val = document.getElementById('wa-buscar').value.trim().toLowerCase();
-      renderSidebarList(val);
-    }
+function renderSidebarList(filtro) {
+  let html = "";
+
+  if (filtroSidebar === 'usuarios') {
+    // Filtrado de usuarios
+    usuariosEjemplo
+      .filter(u =>
+        !filtro ||
+        u.nombre.toLowerCase().includes(filtro) ||
+        (u.instrumento && u.instrumento.toLowerCase().includes(filtro))
+      )
+      .forEach(u => {
+        html += `
+          <div class="wa-item" onclick="abrirPerfil('${u.nombre.replace(/'/g,"\\'")}')">
+            ${u.nombre} (${u.instrumento})
+            <img src="${u.img}">
+          </div>
+        `;
+      });
+
+  } else {
+    // Filtrado de grupos
+    gruposEjemplo
+      .filter(g =>
+        !filtro ||
+        g.nombre.toLowerCase().includes(filtro)
+      )
+      .forEach(g => {
+        html += `
+          <div class="wa-item" onclick="abrirPerfil('${g.nombre.replace(/'/g,"\\'")}')">
+            ${g.nombre}
+            <img src="${g.img}">
+          </div>
+        `;
+      });
+  }
+
+  document.getElementById('wa-sidebar-list').innerHTML = html;
+}
+
+function filtrarSidebar() {
+  const val = document.getElementById('wa-buscar')
+    .value
+    .trim()
+    .toLowerCase();
+  renderSidebarList(val);
+}
+
     function abrirPerfil(nombre) {
       // Cerrar si el usuario ya está abierto
       if (ultimoPerfilAbierto === nombre && document.getElementById('perfil-usuario-panel').classList.contains('active')) {

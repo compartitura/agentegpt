@@ -423,6 +423,32 @@
     margin: 0;
   }
 
+/* Popup de sugerencias */
+.sugerencias-popup {
+  position: absolute;
+  bottom: 64px;      /* justo encima de la barra de chat */
+  left: 12px;        /* márgenes similares al input */
+  right: 12px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+  padding: 4px 0;
+  z-index: 1000;
+}
+.sugerencias-popup button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 8px 12px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 15px;
+}
+.sugerencias-popup button:hover {
+  background: #f0f0f0;
+}
+
   /* Chat-inputbar justo encima del nav */
   .wa-chat-inputbar {
     position: fixed !important;
@@ -504,22 +530,39 @@
         <div class="wa-central-content" id="wa-chat-messages">
           <div class="wa-bubble cecilia"><div class="wa-bubble-content">¡Hola! Soy Cecilia, ¿en qué puedo ayudarte hoy?</div></div>
         </div>
-        <form class="wa-chat-inputbar" onsubmit="return enviarCecilia(event)">
-          <span class="wa-icon-cecilia"><img src="https://www.compartitura.org/medias/images/captura-12.jpg" alt="Cecilia"></span>
-          <span class="wa-input-wrap">
-            <textarea id="wa-input" placeholder="Escribe tu consulta a Cecilia..." rows="1"></textarea>
-            <button type="button" class="wa-btn-preguntas" onclick="abrirPreguntas('cecilia')">
-              <svg viewBox="0 0 28 20" fill="none"><rect x="2" y="3" width="24" height="2" rx="1" fill="#bbb"/><rect x="2" y="9" width="24" height="2" rx="1" fill="#bbb"/><rect x="2" y="15" width="24" height="2" rx="1" fill="#bbb"/></svg>
-            </button>
-            <!-- Tres puntitos oscilantes (ocultos por defecto) -->
-            <span id="wa-typing-dots" class="wa-puntos-oscilantes" style="display:none; position:absolute; right:48px; top:50%; transform:translateY(-50%);">
-              <span></span><span></span><span></span>
-            </span>
-          </span>
-          <button type="submit" class="wa-btn-enviar" aria-label="Enviar">
-            <svg viewBox="0 0 60 60"><polygon points="10,30 50,10 50,50" fill="var(--primario)"/></svg>
-          </button>
-        </form>
+<form class="wa-chat-inputbar" onsubmit="return enviarCecilia(event)">
+<div id="sugerencias-popup" class="sugerencias-popup" style="display:none;"></div>
+
+<form class="wa-chat-inputbar" onsubmit="return enviarCecilia(event)">
+  <span class="wa-icon-cecilia">
+    <img src="https://www.compartitura.org/medias/images/captura-12.jpg" alt="Cecilia">
+  </span>
+  <span class="wa-input-wrap">
+    <textarea
+      id="wa-input"
+      placeholder="Escribe lo que quieras..."
+      rows="1"
+    ></textarea>
+  </span>
+  <!-- Botón de preguntas movido aquí, justo antes de Enviar -->
+  <button
+    type="button"
+    class="wa-btn-preguntas"
+    onclick="abrirPreguntas('cecilia')"
+    aria-label="Preguntas frecuentes"
+  >
+    <svg viewBox="0 0 28 20" fill="none">
+      <rect x="2" y="3" width="24" height="2" rx="1" fill="#bbb"/>
+      <rect x="2" y="9" width="24" height="2" rx="1" fill="#bbb"/>
+      <rect x="2" y="15" width="24" height="2" rx="1" fill="#bbb"/>
+    </svg>
+  </button>
+  <button type="submit" class="wa-btn-enviar" aria-label="Enviar">
+    <svg viewBox="0 0 60 60">
+      <polygon points="10,30 50,10 50,50"/>
+    </svg>
+  </button>
+</form>
       </section>
       <!-- BLOQUE INSTRUMENTOS -->
       <section class="wa-central" id="bloque-instrumentos" style="display:none;">
@@ -545,18 +588,37 @@
           </iframe>
           <!-- JS mete los mensajes aquí -->
         </div>
-        <form class="wa-chat-inputbar" onsubmit="return mostrarChatBlock('instrumentos')">
-          <span class="wa-icon-cecilia"><img src="https://www.compartitura.org/medias/images/captura-12.jpg" alt="Cecilia"></span>
-          <span class="wa-input-wrap">
-            <textarea id="wa-input-instrumentos" placeholder="¿Alguna consulta sobre instrumentos y accesorios...?" rows="1"></textarea>
-            <button type="button" class="wa-btn-preguntas" onclick="abrirPreguntas('instrumentos')">
-              <svg viewBox="0 0 28 20" fill="none"><rect x="2" y="3" width="24" height="2" rx="1" fill="#bbb"/><rect x="2" y="9" width="24" height="2" rx="1" fill="#bbb"/><rect x="2" y="15" width="24" height="2" rx="1" fill="#bbb"/></svg>
-            </button>
-          </span>
-          <button type="submit" class="wa-btn-enviar" aria-label="Enviar">
-            <svg viewBox="0 0 60 60"><polygon points="10,30 50,10 50,50" fill="var(--primario)"/></svg>
-          </button>
-        </form>
+<form class="wa-chat-inputbar" onsubmit="return enviarCecilia(event)">
+  <span class="wa-icon-cecilia">
+    <img src="https://www.compartitura.org/medias/images/captura-12.jpg" alt="Cecilia">
+  </span>
+  <span class="wa-input-wrap">
+    <textarea
+      id="wa-input"
+      placeholder="Escribe lo que quieras..."
+      rows="1"
+    ></textarea>
+  </span>
+  <!-- Botón de preguntas movido aquí, justo antes de Enviar -->
+  <button
+    type="button"
+    class="wa-btn-preguntas"
+    onclick="abrirPreguntas('cecilia')"
+    aria-label="Preguntas frecuentes"
+  >
+    <svg viewBox="0 0 28 20" fill="none">
+      <rect x="2" y="3" width="24" height="2" rx="1" fill="#bbb"/>
+      <rect x="2" y="9" width="24" height="2" rx="1" fill="#bbb"/>
+      <rect x="2" y="15" width="24" height="2" rx="1" fill="#bbb"/>
+    </svg>
+  </button>
+  <button type="submit" class="wa-btn-enviar" aria-label="Enviar">
+    <svg viewBox="0 0 60 60">
+      <polygon points="10,30 50,10 50,50"/>
+    </svg>
+  </button>
+</form>
+
       </section>
       <!-- BLOQUES PARTITURAS/EMPLEO/COMUNIDAD IGUAL QUE ANTES -->
       <section class="wa-central" id="bloque-partituras" style="display:none;">
@@ -572,18 +634,37 @@
           <span class="wa-central-title">Partituras</span>
         </header>
         <div class="wa-central-content wa-tienda-wrap" id="wa-partituras-messages" style="padding:0;"></div>
-        <form class="wa-chat-inputbar" onsubmit="return mostrarChatBlock('partituras')">
-          <span class="wa-icon-cecilia"><img src="https://www.compartitura.org/medias/images/captura-12.jpg" alt="Cecilia"></span>
-          <span class="wa-input-wrap">
-            <textarea id="wa-input-partituras" placeholder="¿Dudas o búsquedas de partituras?" rows="1"></textarea>
-            <button type="button" class="wa-btn-preguntas" onclick="abrirPreguntas('partituras')">
-              <svg viewBox="0 0 28 20" fill="none"><rect x="2" y="3" width="24" height="2" rx="1" fill="#bbb"/><rect x="2" y="9" width="24" height="2" rx="1" fill="#bbb"/><rect x="2" y="15" width="24" height="2" rx="1" fill="#bbb"/></svg>
-            </button>
-          </span>
-          <button type="submit" class="wa-btn-enviar" aria-label="Enviar">
-            <svg viewBox="0 0 60 60"><polygon points="10,30 50,10 50,50" fill="var(--primario)"/></svg>
-          </button>
-        </form>
+<form class="wa-chat-inputbar" onsubmit="return enviarCecilia(event)">
+  <span class="wa-icon-cecilia">
+    <img src="https://www.compartitura.org/medias/images/captura-12.jpg" alt="Cecilia">
+  </span>
+  <span class="wa-input-wrap">
+    <textarea
+      id="wa-input"
+      placeholder="Escribe lo que quieras..."
+      rows="1"
+    ></textarea>
+  </span>
+  <!-- Botón de preguntas movido aquí, justo antes de Enviar -->
+  <button
+    type="button"
+    class="wa-btn-preguntas"
+    onclick="abrirPreguntas('cecilia')"
+    aria-label="Preguntas frecuentes"
+  >
+    <svg viewBox="0 0 28 20" fill="none">
+      <rect x="2" y="3" width="24" height="2" rx="1" fill="#bbb"/>
+      <rect x="2" y="9" width="24" height="2" rx="1" fill="#bbb"/>
+      <rect x="2" y="15" width="24" height="2" rx="1" fill="#bbb"/>
+    </svg>
+  </button>
+  <button type="submit" class="wa-btn-enviar" aria-label="Enviar">
+    <svg viewBox="0 0 60 60">
+      <polygon points="10,30 50,10 50,50"/>
+    </svg>
+  </button>
+</form>
+
       </section>
       <section class="wa-central" id="bloque-empleo" style="display:none;">
         <header class="wa-central-header">
@@ -596,18 +677,36 @@
           <span class="wa-central-title">Empleo</span>
         </header>
         <div class="wa-central-content wa-tienda-wrap" id="wa-empleo-messages" style="padding:0;"></div>
-        <form class="wa-chat-inputbar" onsubmit="return mostrarChatBlock('empleo')">
-          <span class="wa-icon-cecilia"><img src="https://www.compartitura.org/medias/images/captura-12.jpg" alt="Cecilia"></span>
-          <span class="wa-input-wrap">
-            <textarea id="wa-input-empleo" placeholder="¿Buscas empleo musical o necesitas músicos?" rows="1"></textarea>
-            <button type="button" class="wa-btn-preguntas" onclick="abrirPreguntas('empleo')">
-              <svg viewBox="0 0 28 20" fill="none"><rect x="2" y="3" width="24" height="2" rx="1" fill="#bbb"/><rect x="2" y="9" width="24" height="2" rx="1" fill="#bbb"/><rect x="2" y="15" width="24" height="2" rx="1" fill="#bbb"/></svg>
-            </button>
-          </span>
-          <button type="submit" class="wa-btn-enviar" aria-label="Enviar">
-            <svg viewBox="0 0 60 60"><polygon points="10,30 50,10 50,50" fill="var(--primario)"/></svg>
-          </button>
-        </form>
+<form class="wa-chat-inputbar" onsubmit="return enviarCecilia(event)">
+  <span class="wa-icon-cecilia">
+    <img src="https://www.compartitura.org/medias/images/captura-12.jpg" alt="Cecilia">
+  </span>
+  <span class="wa-input-wrap">
+    <textarea
+      id="wa-input"
+      placeholder="Escribe lo que quieras..."
+      rows="1"
+    ></textarea>
+  </span>
+  <!-- Botón de preguntas movido aquí, justo antes de Enviar -->
+  <button
+    type="button"
+    class="wa-btn-preguntas"
+    onclick="abrirPreguntas('cecilia')"
+    aria-label="Preguntas frecuentes"
+  >
+    <svg viewBox="0 0 28 20" fill="none">
+      <rect x="2" y="3" width="24" height="2" rx="1" fill="#bbb"/>
+      <rect x="2" y="9" width="24" height="2" rx="1" fill="#bbb"/>
+      <rect x="2" y="15" width="24" height="2" rx="1" fill="#bbb"/>
+    </svg>
+  </button>
+  <button type="submit" class="wa-btn-enviar" aria-label="Enviar">
+    <svg viewBox="0 0 60 60">
+      <polygon points="10,30 50,10 50,50"/>
+    </svg>
+  </button>
+</form>
       </section>
       <section class="wa-central" id="bloque-comunidad" style="display:none;">
         <header class="wa-central-header">
@@ -620,23 +719,42 @@
           <span class="wa-central-title">Comunidad</span>
         </header>
         <div class="wa-central-content wa-tienda-wrap" id="wa-comunidad-messages" style="padding:0;"></div>
-        <form class="wa-chat-inputbar" onsubmit="return mostrarChatBlock('comunidad')">
-          <span class="wa-icon-cecilia"><img src="https://www.compartitura.org/medias/images/captura-12.jpg" alt="Cecilia"></span>
-          <span class="wa-input-wrap">
-            <textarea id="wa-input-comunidad" placeholder="¿Dudas, consultas o propuestas para la comunidad?" rows="1"></textarea>
-            <button type="button" class="wa-btn-preguntas" onclick="abrirPreguntas('comunidad')">
-              <svg viewBox="0 0 28 20" fill="none"><rect x="2" y="3" width="24" height="2" rx="1" fill="#bbb"/><rect x="2" y="9" width="24" height="2" rx="1" fill="#bbb"/><rect x="2" y="15" width="24" height="2" rx="1" fill="#bbb"/></svg>
-            </button>
-          </span>
-          <button type="submit" class="wa-btn-enviar" aria-label="Enviar">
-            <svg viewBox="0 0 60 60"><polygon points="10,30 50,10 50,50" fill="var(--primario)"/></svg>
-          </button>
-        </form>
+<form class="wa-chat-inputbar" onsubmit="return enviarCecilia(event)">
+  <span class="wa-icon-cecilia">
+    <img src="https://www.compartitura.org/medias/images/captura-12.jpg" alt="Cecilia">
+  </span>
+  <span class="wa-input-wrap">
+    <textarea
+      id="wa-input"
+      placeholder="Escribe lo que quieras..."
+      rows="1"
+    ></textarea>
+  </span>
+  <!-- Botón de preguntas movido aquí, justo antes de Enviar -->
+  <button
+    type="button"
+    class="wa-btn-preguntas"
+    onclick="abrirPreguntas('cecilia')"
+    aria-label="Preguntas frecuentes"
+  >
+    <svg viewBox="0 0 28 20" fill="none">
+      <rect x="2" y="3" width="24" height="2" rx="1" fill="#bbb"/>
+      <rect x="2" y="9" width="24" height="2" rx="1" fill="#bbb"/>
+      <rect x="2" y="15" width="24" height="2" rx="1" fill="#bbb"/>
+    </svg>
+  </button>
+  <button type="submit" class="wa-btn-enviar" aria-label="Enviar">
+    <svg viewBox="0 0 60 60">
+      <polygon points="10,30 50,10 50,50"/>
+    </svg>
+  </button>
+</form>
+
       </section>
     </div>
     <!-- Columna derecha -->
     <aside class="wa-right">
-      <div class="wa-right-header" id="wa-right-header">Opciones</div>
+      <div class="wa-right-header" id="wa-right-header">Novedades</div>
       <div class="wa-right-content" id="wa-right-content">
         <div class="wa-item">Info relevante para prueba</div>
       </div>
@@ -963,9 +1081,72 @@ function cerrarModalUsuarios() {
   document.getElementById('modal-usuarios-movil').style.display = "none";
 }
 
-    function abrirPreguntas(bloque){
-      alert('Aquí irían preguntas frecuentes sobre: ' + bloque);
-    }
+    function abrirPreguntas(bloque) {
+  const sugerencias = {
+    cecilia: [
+      "¿Cómo mejorar mi técnica de lectura de partituras?",
+      "¿Qué ejercicios me recomiendas para el solfeo?",
+      "¿Cuáles son los principios básicos de la teoría musical?",
+      "¿Cómo afinar correctamente mi instrumento?",
+      "¿Qué recursos online gratuitos de música conoces?"
+    ],
+    instrumentos: [
+      "¿Qué guitarra me recomiendas para principiantes?",
+      "¿Dónde compro boquillas de trompeta con garantía?",
+      "¿Cómo limpiar la armónica sin dañarla?",
+      "¿Qué estuche es mejor para saxofón?",
+      "¿Cómo regular la acción de una guitarra acústica?"
+    ],
+    partituras: [
+      "¿Dónde encuentro partituras gratuitas clásicas?",
+      "¿Cómo subir una partitura para compartirla?",
+      "¿Hay partituras transcritas para piano de canciones pop?",
+      "¿Cómo buscar partituras por compositor?",
+      "¿Puedo solicitar una partitura en la comunidad?"
+    ],
+    empleo: [
+      "¿Cómo publicar una oferta de empleo para músicos?",
+      "¿Dónde busco flautistas en mi ciudad?",
+      "¿Qué información incluir en una audición?",
+      "¿Cómo contacto a directores de orquesta?",
+      "¿Cuáles son tarifas habituales de session musicians?"
+    ],
+    comunidad: [
+      "¿Cómo unirme al grupo de saxofonistas?",
+      "¿Dónde anuncio conciertos locales?",
+      "¿Puedo crear un subgrupo de percusionistas?",
+      "¿Cómo organizar quedadas de músicos?",
+      "¿Qué normas hay para compartir archivos?"
+    ]
+  };
+
+  const lista = sugerencias[bloque] || [];
+  const popup = document.getElementById('sugerencias-popup');
+  popup.innerHTML = ''; 
+
+  if (!lista.length) {
+    popup.style.display = 'none';
+    return;
+  }
+
+  lista.forEach(texto => {
+    const btn = document.createElement('button');
+    btn.textContent = texto;
+    btn.onclick = () => {
+      // 1) Poner el texto en el textarea
+      const input = document.getElementById('wa-input');
+      input.value = texto;
+      // 2) Enviar la pregunta
+      enviarCecilia(new Event('submit'));
+      // 3) Ocultar popup
+      popup.style.display = 'none';
+    };
+    popup.appendChild(btn);
+  });
+
+  // Mostrar popup
+  popup.style.display = 'block';
+}
     function toggleDropdown(e){
       e.stopPropagation();
       let menu = e.currentTarget.nextElementSibling;

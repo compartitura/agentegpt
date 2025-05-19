@@ -365,59 +365,37 @@
     .perfil-btn-reportar { background: #fff2ee; color: #b22; border: 1.3px solid #b22;}
     .perfil-btn-reportar:hover { background: #ffd3d3; }
 @media (max-width: 900px) {
-  .wa-main {
-    display: flex;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .wa-central {
-    flex: 0 0 100vw;
-    scroll-snap-align: start;
-    height: 100vh;
-    overflow-y: auto;
-  }
-
-  .wa-sidebar, .wa-right {
-    display: none !important;
-  }
-}
-@media (max-width: 900px) {
   .wa-nav {
     position: fixed;
     bottom: 0;
     left: 0;
     width: 100vw;
     height: 64px;
-    flex-direction: row !important;
-    justify-content: space-around;
+    flex-direction: row;
     align-items: center;
+    justify-content: flex-start;
     background: var(--primario);
+    padding: 0 10px;
     z-index: 999;
   }
 
-  .wa-layout > .wa-nav {
-    position: static;
-    width: 64px;
-    height: auto;
-    flex-direction: column;
-    justify-content: flex-start;
-    background: var(--primario);
-  }
-
   .wa-nav .wa-logo-btn {
-    display: none;
+    display: flex;
+    width: 42px;
+    height: 42px;
+    margin-right: 12px;
   }
 
   .wa-nav .wa-nav-btn {
-    margin: 0;
+    flex: 0 0 auto;
+    margin: 0 6px;
   }
 
   .wa-chat-inputbar {
-    padding-bottom: 70px; /* espacio para nav fija abajo */
+    padding-bottom: 70px; /* deja espacio debajo para la barra */
   }
 }
+
   </style>
 </head>
 <body>

@@ -1052,18 +1052,28 @@ function filtrarSidebar() {
     }
     // Enter para enviar, Shift+Enter para salto de línea
     document.addEventListener('DOMContentLoaded', () => {
-      ['wa-input','wa-input-instrumentos','wa-input-partituras','wa-input-empleo','wa-input-comunidad'].forEach(id => {
-        const el = document.getElementById(id);
-        if(el) {
-          el.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' && !e.shiftKey) {
-              e.preventDefault();
-              this.form.querySelector('.wa-btn-enviar').click();
-            }
-          });
+  // ya tenías estos…
+  ['wa-input','wa-input-instrumentos','wa-input-partituras','wa-input-empleo','wa-input-comunidad']
+    .forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      // Enviar con Enter…
+      el.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          this.form.querySelector('.wa-btn-enviar').click();
         }
       });
+      // Y nuevo: al hacer foco en cualquier textarea, salta a Cecilia
+      if (id !== 'wa-input') {  // no lo hagas sobre el propio Cecilia
+        el.addEventListener('focus', () => {
+          showBlock('cecilia');
+          // opcional: volcamos el texto al textarea de Cecilia
+          document.getElementById('wa-input').value = this.value;
+        });
+      }
     });
+});
 function abrirUsuariosMovil() {
   var modal = document.getElementById('modal-usuarios-movil');
   modal.style.display = "block";
@@ -1081,7 +1091,9 @@ function cerrarModalUsuarios() {
   document.getElementById('modal-usuarios-movil').style.display = "none";
 }
 
-    function abrirPreguntas(bloque) {
+    function abrirPreguntas(bloque, producto) {
+// 1) Ir a Cecilia
+  showBlock('cecilia');
   const sugerencias = {
     cecilia: [
       "¿Cómo mejorar mi técnica de lectura de partituras?",

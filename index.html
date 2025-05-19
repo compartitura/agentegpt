@@ -384,15 +384,16 @@
   }
 
   /* Cada panel ocupa ancho completo y hace snap */
-  .wa-sidebar,
-  .wa-central,
-  .wa-right {
-    flex: 0 0 100vw !important;
-    max-width: 100vw !important;
-    scroll-snap-align: start;
-    height: calc(100vh - 64px /* nav */ - 67px /* chat-bar */);
-    overflow-y: auto;
-  }
+/* Cada panel ocupa ancho completo y hace snap */
+.wa-sidebar,
+.wa-main,
+.wa-right {
+  flex: 0 0 100vw !important;
+  max-width: 100vw !important;
+  scroll-snap-align: start;
+  height: calc(100vh - 64px /* nav fijo */ - 67px /* chat-bar */);
+  overflow-y: auto;
+}
 
   /* Nav fijo en la parte inferior y en fila */
   .wa-nav {

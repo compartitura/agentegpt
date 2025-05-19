@@ -478,6 +478,50 @@
     border-radius: 0 !important;
     background: #fff !important;
     box-shadow: 0 -1px 13px #ede6c4;
+.wa-bloque-inner {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  transition: transform .3s;
+}
+
+.wa-sidebar,
+.wa-right {
+  flex: 0 0 320px;
+  max-width: 320px;
+  background: #eee;
+  min-width: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wa-central {
+  flex: 1 1 0;
+  background: #fff7dc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* --- MÓVIL: CARRUSEL --- */
+@media (max-width: 900px) {
+  .wa-bloque-inner {
+    width: 300vw; /* 3 columnas x 100vw */
+    height: 100vh;
+    display: flex;
+    transition: transform .38s cubic-bezier(.77,.18,.6,1.1);
+  }
+  .wa-sidebar,
+  .wa-central,
+  .wa-right {
+    min-width: 100vw !important;
+    max-width: 100vw !important;
+    width: 100vw !important;
+    height: 100vh;
+    box-sizing: border-box;
+    border-radius: 0;
   }
 }
 
@@ -547,6 +591,22 @@
             <li>Pagos y facturas</li>
           </ul>
         </header>
+<div class="wa-bloque" id="bloque-cecilia">
+  <div class="wa-bloque-inner">
+    <!-- Sidebar izquierda -->
+    <aside class="wa-sidebar">
+      <div>Sidebar Izquierda</div>
+    </aside>
+    <!-- Columna central -->
+    <main class="wa-central">
+      <div>CENTRAL Cecilia</div>
+    </main>
+    <!-- Sidebar derecha -->
+    <aside class="wa-right">
+      <div>Sidebar Derecha</div>
+    </aside>
+  </div>
+</div>
         <div class="wa-central-content" id="wa-chat-messages">
           <div class="wa-bubble cecilia"><div class="wa-bubble-content">¡Hola! Soy Cecilia, ¿en qué puedo ayudarte hoy?</div></div>
         </div>
@@ -999,6 +1059,28 @@ function cerrarModalUsuarios() {
     <div id="usuarios-movil-list"></div>
   </div>
 </div>
+<script>
+let columnaActual = 1; // Empezar en central
+
+window.moverCarruselCecilia = function(indice) {
+  columnaActual = indice;
+  const bloque = document.querySelector('#bloque-cecilia .wa-bloque-inner');
+  bloque.style.transform = `translateX(-${columnaActual * 100}vw)`;
+};
+
+if(window.innerWidth <= 900){
+  document.body.insertAdjacentHTML('beforeend', `
+    <div id="carrusel-controls" style="position:fixed;bottom:23px;left:50%;transform:translateX(-50%);z-index:9999;">
+      <button onclick="moverCarruselCecilia(0)">Izquierda</button>
+      <button onclick="moverCarruselCecilia(1)">Central</button>
+      <button onclick="moverCarruselCecilia(2)">Derecha</button>
+    </div>
+  `);
+  // Por defecto al central
+  setTimeout(()=>window.moverCarruselCecilia(1), 80);
+}
+</script>
+
 
 </body>
 </html>

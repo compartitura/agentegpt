@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>Compartitura</title>
   <link rel="icon" href="data:;base64,iVBORw0KGgo=">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:400,500&display=swap">
+
   <style>
     :root {
       --primario: #2C3E50;
@@ -18,10 +18,68 @@
     }
     body {
       margin: 0; padding: 0; background: var(--fondo);
-      font-family: 'Inter', sans-serif;
+      font-family:
+    ui-sans-serif,       /* Tailwind alias a system-ui */
+    -apple-system,       /* SF Pro en macOS/iOS */
+    system-ui,           /* la fuente por defecto del SO */
+    "Segoe UI",          /* Windows */
+    Helvetica,           /* fallback clásico */
+    "Apple Color Emoji", /* emojis en Apple */
+    Arial,               /* más fallback */
+    sans-serif,          /* genérico final */
+    "Segoe UI Emoji",
+    "Segoe UI Symbol";
       height: 100vh; width: 100vw; overflow: hidden;
       color: var(--texto);
     }
+/* --- Burbujas de Cecilia --- */
+.wa-bubble.cecilia {
+  position: relative; /* para posicionar el ::after */
+  padding-left: 12px; /* deja espacio para la cola */
+}
+.wa-bubble.cecilia .wa-bubble-content {
+  background: #fff;
+  color: var(--texto);
+  padding: 16px 20px;
+  border-radius: 16px 16px 16px 4px; /* top-left, top-right, bottom-right, bottom-left */
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  position: relative;
+}
+
+/* Cola de la burbuja de Cecilia */
+.wa-bubble.cecilia .wa-bubble-content::after {
+  content: "";
+  position: absolute;
+  top: 12px;
+  left: -8px;
+  width: 0; height: 0;
+  border: 8px solid transparent;
+  border-right-color: #fff;
+}
+/* --- Burbujas del usuario --- */
+.wa-bubble.user {
+  position: relative;
+  padding-right: 12px;
+}
+.wa-bubble.user .wa-bubble-content {
+  background: var(--acento2, #FAE8C8);
+  color: var(--texto);
+  padding: 16px 20px;
+  border-radius: 16px 16px 4px 16px; /* top-left, top-right, bottom-right, bottom-left */
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  position: relative;
+}
+
+/* Cola de la burbuja del usuario */
+.wa-bubble.user .wa-bubble-content::after {
+  content: "";
+  position: absolute;
+  top: 12px;
+  right: -8px;
+  width: 0; height: 0;
+  border: 8px solid transparent;
+  border-left-color: var(--acento2, #FAE8C8);
+}
     .wa-layout {
       display: flex; height: 100vh; width: 100vw; background: var(--fondo);
     }
@@ -211,12 +269,30 @@
     }
     .wa-bubble.cecilia { justify-content: flex-start; }
     .wa-bubble.user { justify-content: flex-end; }
-    .wa-bubble-content {
-      max-width: 90vw; background: #fff; border-radius: 18px;
-      padding: 15px 23px; font-size: 17px; box-shadow: 0 2px 8px #f2e6c5;
-      color: var(--primario); font-weight: 500;
-      margin: 0 0 0 0;
-    }
+    .wa-bubble.cecilia .wa-bubble-content {
+  background: #fff;            /* pasa de #fff puro a blanco puro sin tonalidad fuerte */
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08); /* sombra más ligera */
+  border-radius: 12px;        /* esquinas un poco más redondeadas */
+  padding: 16px 20px;         /* algo más de espacio interior */
+  color: var(--texto);        /* texto en color principal, no tan oscuro */
+  line-height: 1.6;           /* mayor interlineado para lectura */
+}
+/* 2) Mayor separación entre párrafos dentro de Cecilia */
+.wa-bubble.cecilia .wa-bubble-content p {
+  margin: 0 0 1em 0;          /* separa párrafos con 1em de espacio */
+}
+
+/* 3) Si usas saltos de línea <br>, asegúrate de añadir margen extra */
+.wa-bubble.cecilia .wa-bubble-content br {
+  content: "";
+  display: block;
+  margin-bottom: 0.75em;
+}
+
+/* 4) Texto menos “marcado” al quitar fondo amarillo en las respuestas */
+.wa-bubble.user .wa-bubble-content {
+  background: var(--acento2, #FAE8C8); /* mantiene tu amarillo suave, opcional */
+}
     .wa-bubble.cecilia .wa-bubble-content { border-bottom-left-radius: 7px; }
     .wa-bubble.user .wa-bubble-content { background: #FAE8C8; border-bottom-right-radius: 7px; color: var(--texto);}
     .wa-tienda-wrap {
@@ -424,15 +500,25 @@
   }
 
 /* Popup de sugerencias */
+/* Botón de cerrar */
+.sugerencias-popup .popup-close {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+/* Ajuste de padding para dejar hueco al ✕ */
 .sugerencias-popup {
   position: absolute;
-  bottom: 64px;      /* justo encima de la barra de chat */
-  left: 12px;        /* márgenes similares al input */
+  bottom: 64px;
+  left: 12px;
   right: 12px;
   background: #fff;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.15);
-  padding: 4px 0;
+  padding: 28px 4px 4px; /* más padding arriba para el ✕ */
   z-index: 1000;
 }
 .sugerencias-popup button {
@@ -532,8 +618,6 @@
         </div>
 <form class="wa-chat-inputbar" onsubmit="return enviarCecilia(event)">
 <div id="sugerencias-popup" class="sugerencias-popup" style="display:none;"></div>
-
-<form class="wa-chat-inputbar" onsubmit="return enviarCecilia(event)">
   <span class="wa-icon-cecilia">
     <img src="https://www.compartitura.org/medias/images/captura-12.jpg" alt="Cecilia">
   </span>
@@ -1091,10 +1175,29 @@ function cerrarModalUsuarios() {
   document.getElementById('modal-usuarios-movil').style.display = "none";
 }
 
-    function abrirPreguntas(bloque, producto) {
-// 1) Ir a Cecilia
+    
+function abrirPreguntas(bloque, producto) {
+  // 1) Cambiar siempre al chat de Cecilia
   showBlock('cecilia');
-  const sugerencias = {
+
+  const popup = document.getElementById('sugerencias-popup');
+
+  // 2) Si ya estaba abierto, ciérralo y sal
+  if (popup.style.display === 'block') {
+    popup.style.display = 'none';
+    return;
+  }
+
+  // 3) Limpia contenido anterior
+  popup.innerHTML = '';
+
+  // 4) Añade botón “✕” para cerrar
+  const closeBtn = document.createElement('span');
+  closeBtn.textContent = '✕';
+  closeBtn.className = 'popup-close';
+  closeBtn.onclick = () => { popup.style.display = 'none'; };
+  popup.appendChild(closeBtn);
+  const sugerenciasPorBloque = {
     cecilia: [
       "¿Cómo mejorar mi técnica de lectura de partituras?",
       "¿Qué ejercicios me recomiendas para el solfeo?",
@@ -1130,34 +1233,31 @@ function cerrarModalUsuarios() {
       "¿Cómo organizar quedadas de músicos?",
       "¿Qué normas hay para compartir archivos?"
     ]
-  };
+};
+  let lista = producto
+    ? [ // si viene producto, preguntas específicas
+        `¿Qué opinas del ${producto}?`,
+        `¿Dónde comprar el ${producto}?`,
+        `¿Qué accesorios necesita el ${producto}?`
+      ]
+    : (sugerenciasPorBloque[bloque] || []);
 
-  const lista = sugerencias[bloque] || [];
-  const popup = document.getElementById('sugerencias-popup');
-  popup.innerHTML = ''; 
-
-  if (!lista.length) {
-    popup.style.display = 'none';
-    return;
-  }
-
+  // 6) Construye los botones
   lista.forEach(texto => {
     const btn = document.createElement('button');
     btn.textContent = texto;
     btn.onclick = () => {
-      // 1) Poner el texto en el textarea
+      // inyecta texto y envía
       const input = document.getElementById('wa-input');
       input.value = texto;
-      // 2) Enviar la pregunta
       enviarCecilia(new Event('submit'));
-      // 3) Ocultar popup
       popup.style.display = 'none';
     };
     popup.appendChild(btn);
   });
 
-  // Mostrar popup
-  popup.style.display = 'block';
+  // 7) Muestra el popup
+  popup.style.display = lista.length ? 'block' : 'none';
 }
     function toggleDropdown(e){
       e.stopPropagation();

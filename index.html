@@ -362,52 +362,77 @@
     .perfil-btn-reportar:hover { background: #ffd3d3; 
       }
     @media (max-width: 900px) {
-      /* Mantener sidebars visibles y apilarlos en scroll horizontal */
-      .wa-sidebar,
-      .wa-right {
-        display: flex !important;
-        flex-direction: column;
-      }
+  /* Mantener sidebars visibles y apilarlos en scroll horizontal */
+  .wa-sidebar,
+  .wa-right {
+    display: flex !important;
+    flex-direction: column;
+  }
 
-      /* Layout como carrusel de “slides” */
-      .wa-layout {
-        display: flex;
-        flex-direction: row;
-        overflow-x: auto;
-        scroll-snap-type: x mandatory;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
-        height: calc(100vh - 64px); /* dejando espacio para nav fijo en bottom */
-      }
-      .wa-layout::-webkit-scrollbar { display: none; }
+  /* Layout como carrusel de “slides” */
+  .wa-layout {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    height: calc(100vh - 64px); /* espacio para nav fijo */
+  }
+  .wa-layout::-webkit-scrollbar {
+    display: none;
+  }
 
-      /* Cada panel ocupa ancho completo y hace snap */
-      .wa-sidebar,
-      .wa-central,
-      .wa-right {
-        flex: 0 0 100vw !important;
-        max-width: 100vw !important;
-        scroll-snap-align: start;
-        height: calc(100vh - 64px /* nav */ - 67px /* chat-bar */);
-        overflow-y: auto;
-      }
+  /* Cada panel ocupa ancho completo y hace snap */
+  .wa-sidebar,
+  .wa-central,
+  .wa-right {
+    flex: 0 0 100vw !important;
+    max-width: 100vw !important;
+    scroll-snap-align: start;
+    height: calc(100vh - 64px /* nav */ - 67px /* chat-bar */);
+    overflow-y: auto;
+  }
 
-      /* Nav fijo en la parte inferior */
-      .wa-nav {
-        position: fixed;
-        bottom: 0; left: 0;
-        width: 100vw;
-        z-index: 999;
-      }
-      /* Chat-inputbar justo encima del nav */
-      .wa-chat-inputbar {
-        position: fixed !important;
-        bottom: 64px;
-        left: 0; right: 0;
-        width: 100vw;
-        z-index: 998;
-      }
-    }
+  /* Nav fijo en la parte inferior y en fila */
+  .wa-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100vw;
+    height: 64px;
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 12px;
+    z-index: 999;
+  }
+  .wa-nav .wa-logo-btn {
+    margin: 0;
+  }
+  .wa-nav .wa-nav-btn-wrap {
+    flex: 1;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin: 0;
+  }
+  .wa-nav .wa-nav-btn {
+    margin: 0;
+  }
+
+  /* Chat-inputbar justo encima del nav */
+  .wa-chat-inputbar {
+    position: fixed !important;
+    bottom: 64px;
+    left: 0;
+    right: 0;
+    width: 100vw;
+    z-index: 998;
+  }
+}
+
 
   </style>
 </head>

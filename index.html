@@ -364,6 +364,26 @@
     .perfil-btn-tel:hover { background: #d5d5d5; }
     .perfil-btn-reportar { background: #fff2ee; color: #b22; border: 1.3px solid #b22;}
     .perfil-btn-reportar:hover { background: #ffd3d3; }
+@media (max-width: 900px) {
+  .wa-main {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .wa-central {
+    flex: 0 0 100vw;
+    scroll-snap-align: start;
+    height: 100vh;
+    overflow-y: auto;
+  }
+
+  .wa-sidebar, .wa-right {
+    display: none !important;
+  }
+}
+
   </style>
 </head>
 <body>

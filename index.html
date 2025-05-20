@@ -7,11 +7,47 @@
   <link rel="icon" href="data:;base64,iVBORw0KGgo=">
 
   <style>
+/* 1) Ocultar siempre los tabs salvo que estemos en móvil */
+.block-tabs {
+  display: none;
+}
+
+/* 2) Dentro de tu media-query móvil, volverlos flex */
+@media (max-width: 900px) {
+  .block-tabs {
+    display: flex;      /* antes ya tenías position:absolute, etc. */
+    justify-content: space-around;
+    gap: 8px;
+    padding: 6px 0;
+    background: var(--primario);
+    position: absolute;
+    top: 66px;
+    left: 0;
+    width: 100%;
+    z-index: 5;
+  }
+  .block-tabs .tab-btn {
+    flex: 1;
+    max-width: calc(33.333% - 8px);
+    background: var(--primario);
+    color: #fff;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    padding: 6px 0;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+  }
+  .block-tabs .tab-btn.active {
+    border-color: var(--acento);
+  }
+}
+
     :root {
-      --primario: #2C3E50;
+      --primario: #888786;
       --secundario: #F5F0E6;
-      --acento: #D4AF37;
-      --acento2: #FFC107;
+      --acento: #83bea4;
+      --acento2: #6b9784;
       --fondo: #FAFAFA;
       --texto: #212121;
       --sidebar-width: 320px;
@@ -84,7 +120,7 @@
       display: flex; height: 100vh; width: 100vw; background: var(--fondo);
     }
     .wa-nav {
-      width: 64px; background: var(--primario);
+      width: 64px; background: #ffddb3;
       display: flex; flex-direction: column; align-items: center; z-index: 3;
       padding-top: 18px;
     }
@@ -327,14 +363,14 @@
       box-sizing: border-box;
     }
     .wa-btn-preguntas {
-      position: absolute; right: 48px; top: 50%; transform: translateY(-50%);
+      position: absolute; right: 67px; top: 50%; transform: translateY(-50%);
       width: 33px; height: 33px; background: #fff; border-radius: 50%; border: none;
       display: flex; align-items: center; justify-content: center; cursor: pointer;
       box-shadow: 0 1px 3px #eaeaea;
     }
     .wa-btn-preguntas svg { width: 21px; height: 21px; color: #bbb;}
     .wa-btn-enviar {
-      background: none; border: none; border-radius: 50%; margin-left: 16px; padding: 0;
+      background: none; border: none; border-radius: 50%; margin-left: 10px; padding: 0;
       width: 40px; height: 40px; cursor: pointer; display: flex; align-items: center; justify-content: center;
       box-shadow: none; transition: background .12s;
     }
@@ -482,7 +518,7 @@
     flex-direction: row !important;
     justify-content: space-between;
     align-items: center;
-    padding: 0 12px;
+    padding: 0 8px;
     z-index: 999;
   }
   .wa-nav .wa-logo-btn {
@@ -496,7 +532,7 @@
     margin: 0;
   }
   .wa-nav .wa-nav-btn {
-    margin: 0;
+    margin: 4;
   }
 
 /* Popup de sugerencias */
@@ -526,11 +562,12 @@
   width: 100%;
   text-align: left;
   padding: 8px 12px;
-  border: none;
+  border: #efdac1;
   background: none;
   cursor: pointer;
   font-size: 15px;
 }
+
 .sugerencias-popup button:hover {
   background: #f0f0f0;
 }
@@ -545,7 +582,70 @@
     z-index: 998;
   }
 }
+@media (max-width: 900px) {
+  .wa-central {
+    /* Asegura que no tape al header */
+    padding-top: 0px;
+  }
+  .block-tabs {
+    position: absolute;
+    top: 66px; /* justo debajo de .wa-central-header (altura 66px) */
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    gap: 8px;
+    padding: 6px 0;
+    background: #ffddb3;
+    z-index: 5;
+  }
+  .block-tabs .tab-btn {
+    flex: 1;
+    max-width: calc(33.333% - 8px);
+    background: #ffddb3;
+    color: #888786;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    padding: 6px 0;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+  }
+  .block-tabs .tab-btn.active {
+    border-color: var(--acento);
+  }
+}
+@media (max-width: 900px) {
+  /* Ajuste específico para el bloque Instrumentos */
+  /* Elimina posicionamiento absoluto y usa height con cálculo */
+  #bloque-instrumentos .wa-central-content.wa-tienda-stack {
+    position: static;
+    height: calc(100vh - 66px - 64px); /* 66px header + 64px chat-bar */
+    overflow-y: auto;
+  }
+  /* Asegura que el iframe llene todo el contenedor ajustado */
+  #bloque-instrumentos .wa-central-content.wa-tienda-stack .wa-tienda-iframe {
+    width: 100%;
+    height: 100%;
+  }
+}
 
+  /* Ajusta solo el contenido de la tienda para que no quede bajo header ni inputbar */
+  #bloque-instrumentos .wa-central-content.wa-tienda-stack {
+    position: absolute;
+    top: 66px;    /* altura exacta del header */
+    bottom: 64px; /* altura exacta de la barra de consultas fija */
+    left: 0;
+    right: 0;
+    overflow-y: auto;
+  }
+
+  /* Asegura que el iframe llene su contenedor ajustado */
+  #bloque-instrumentos .wa-tienda-iframe {
+    height: 100%;
+    width: 100%;
+  }
+}
 
   </style>
 </head>
@@ -561,18 +661,10 @@
     <button class="wa-nav-btn wa-nav-btn-users" id="nav-usuarios" title="Usuarios y Grupos" onclick="abrirUsuariosMovil()">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="#fff" stroke-width="2" fill="none"/><circle cx="12" cy="10" r="3" stroke="#fff" stroke-width="2" fill="none"/><path d="M6,18a6,6 0 0,1 12,0" stroke="#fff" stroke-width="2" fill="none"/></svg>
     </button>
-<button class="wa-nav-btn" id="nav-cecilia" title="CecilIA" onclick="showBlock('cecilia')">
-  <img
-    src="https://www.compartitura.org/medias/images/captura-12.jpg"
-    alt="Cecilia"
-    class="wa-nav-icon"
-    width="32"
-    height="32"
-  >
-</button>
+
 <button class="wa-nav-btn" id="nav-instrumentos" title="Instrumentos" onclick="showBlock('instrumentos')">
   <img
-    src="https://www.compartitura.org/medias/images/instrumento-musical.png"
+    src="https://www.compartitura.org/medias/images/tienda-5.png"
     alt="Instrumentos"
     class="wa-nav-icon"
     width="32"
@@ -581,7 +673,7 @@
 </button>
 <button class="wa-nav-btn" id="nav-partituras" title="Partituras" onclick="showBlock('partituras')">
   <img
-    src="https://www.compartitura.org/medias/images/partitura-musical-1.png"
+    src="https://www.compartitura.org/medias/images/archivo-de-musica.png"
     alt="Partituras"
     class="wa-nav-icon"
     width="32"
@@ -590,7 +682,7 @@
 </button>
 <button class="wa-nav-btn" id="nav-empleo" title="Empleo" onclick="showBlock('empleo')">
   <img
-    src="https://www.compartitura.org/medias/images/demandante-de-empleo-1.png"
+    src="https://www.compartitura.org/medias/images/habilidad.png"
     alt="Empleo"
     class="wa-nav-icon"
     width="32"
@@ -599,7 +691,7 @@
 </button>
 <button class="wa-nav-btn" id="nav-comunidad" title="Comunidad" onclick="showBlock('comunidad')">
   <img
-    src="https://www.compartitura.org/medias/images/comunidad.png"
+    src="https://www.compartitura.org/medias/images/usuarios-alt.png"
     alt="Comunidad"
     class="wa-nav-icon"
     width="32"
@@ -629,6 +721,11 @@
       <!-- BLOQUE CECILIA -->
       <section class="wa-central" id="bloque-cecilia" style="display:flex;">
         <header class="wa-central-header">
+      <div class="block-tabs">
+  <button class="tab-btn">Usuarios</button>
+  <button class="tab-btn active">Cecilia</button>
+  <button class="tab-btn">Novedades</button>
+</div>
           <span class="wa-central-icon">
             <img src="https://www.compartitura.org/medias/images/captura-12.jpg" alt="Cecilia" />
           </span>
@@ -672,7 +769,7 @@
     </svg>
   </button>
   <button type="submit" class="wa-btn-enviar" aria-label="Enviar">
-  <img src="https://www.compartitura.org/medias/images/enviar-2.png" alt="Enviar" width="24" height="24"/>
+  <img src="https://www.compartitura.org/medias/images/parte-superior-del-avion-de-papel.png" alt="Enviar" width="24" height="24"/>
 </button>
 
 </form>
@@ -680,6 +777,11 @@
       <!-- BLOQUE INSTRUMENTOS -->
       <section class="wa-central" id="bloque-instrumentos" style="display:none;">
         <header class="wa-central-header">
+       <div class="block-tabs">
+  <button class="tab-btn">2ª mano</button>
+  <button class="tab-btn active">Instrumentos</button>
+  <button class="tab-btn">Promociones</button>
+</div>
           <span class="wa-central-icon">
             <!-- ICONO INSTRUMENTOS SVG -->
             <svg width="44" height="44" viewBox="0 0 24 24" fill="none">
@@ -726,16 +828,19 @@
     </svg>
   </button>
   <button type="submit" class="wa-btn-enviar" aria-label="Enviar">
-    <svg viewBox="0 0 60 60">
-      <polygon points="10,30 50,10 50,50"/>
-    </svg>
-  </button>
+  <img src="https://www.compartitura.org/medias/images/parte-superior-del-avion-de-papel.png" alt="Enviar" width="24" height="24"/>
+</button>
 </form>
 
       </section>
       <!-- BLOQUES PARTITURAS/EMPLEO/COMUNIDAD IGUAL QUE ANTES -->
       <section class="wa-central" id="bloque-partituras" style="display:none;">
         <header class="wa-central-header">
+        <div class="block-tabs">
+  <button class="tab-btn">Carpetas</button>
+  <button class="tab-btn active">Partituras</button>
+  <button class="tab-btn">Novedades</button>
+</div>
           <span class="wa-central-icon">
             <svg width="44" height="44" viewBox="0 0 24 24" fill="none">
               <rect x="3" y="3" width="18" height="18" rx="3" stroke="#2C3E50" stroke-width="2"/>
@@ -772,15 +877,19 @@
     </svg>
   </button>
   <button type="submit" class="wa-btn-enviar" aria-label="Enviar">
-    <svg viewBox="0 0 60 60">
-      <polygon points="10,30 50,10 50,50"/>
-    </svg>
-  </button>
+  <img src="https://www.compartitura.org/medias/images/parte-superior-del-avion-de-papel.png" alt="Enviar" width="24" height="24"/>
+</button>
 </form>
 
       </section>
       <section class="wa-central" id="bloque-empleo" style="display:none;">
         <header class="wa-central-header">
+       <div class="block-tabs">
+  <button class="tab-btn">Músicos</button>
+  <button class="tab-btn active">Empleo</button>
+  <button class="tab-btn">Novedades</button>
+</div>
+
           <span class="wa-central-icon">
             <svg width="44" height="44" viewBox="0 0 24 24" fill="none">
               <rect x="3" y="7" width="18" height="11" rx="2" stroke="#2C3E50" stroke-width="2"/>
@@ -815,14 +924,17 @@
     </svg>
   </button>
   <button type="submit" class="wa-btn-enviar" aria-label="Enviar">
-    <svg viewBox="0 0 60 60">
-      <polygon points="10,30 50,10 50,50"/>
-    </svg>
-  </button>
+  <img src="https://www.compartitura.org/medias/images/parte-superior-del-avion-de-papel.png" alt="Enviar" width="24" height="24"/>
+</button>
 </form>
       </section>
       <section class="wa-central" id="bloque-comunidad" style="display:none;">
         <header class="wa-central-header">
+       <div class="block-tabs">
+  <button class="tab-btn">Grupos</button>
+  <button class="tab-btn active">Comunidad</button>
+  <button class="tab-btn">Información</button>
+</div>
           <span class="wa-central-icon">
             <svg width="44" height="44" viewBox="0 0 24 24" fill="none">
               <circle cx="12" cy="9" r="4" stroke="#2C3E50" stroke-width="2"/>
@@ -857,10 +969,8 @@
     </svg>
   </button>
   <button type="submit" class="wa-btn-enviar" aria-label="Enviar">
-    <svg viewBox="0 0 60 60">
-      <polygon points="10,30 50,10 50,50"/>
-    </svg>
-  </button>
+  <img src="https://www.compartitura.org/medias/images/parte-superior-del-avion-de-papel.png" alt="Enviar" width="24" height="24"/>
+</button>
 </form>
 
       </section>
@@ -1010,7 +1120,7 @@ function filtrarSidebar() {
       document.getElementById('perfil-descripcion').innerText = found.instrumento ? `Instrumento: ${found.instrumento}` : `Grupo de ${found.nombre}`;
       let acciones = '';
       if(found.esCecilia){
-        acciones = `<div class="perfil-btn" style="background:#fff3cd;color:#856404;font-weight:700;">¡Soy tu agente IA! Puedes consultarme lo que quieras sobre música, instrumentos, partituras, empleo y más.</div>
+        acciones = `<div class="perfil-btn" style="background:#F5F0E6;color:#856404;font-weight:700;">¡Soy tu agente IA! Puedes consultarme lo que quieras sobre música, instrumentos, partituras, empleo y más.</div>
         <button class="perfil-btn-nueva-consulta" onclick="showBlock('cecilia');cerrarPerfil();">Nueva consulta</button>`;
       } else if(filtroSidebar==='usuarios'){
         acciones = `<a class="perfil-btn perfil-btn-wa" href="https://wa.me/34600123456" target="_blank">Contactar WhatsApp</a>
@@ -1142,27 +1252,51 @@ function filtrarSidebar() {
     }
     // Cambia de bloque y limpia el chat de los bloques no-cecilia
     function showBlock(bloque) {
-      ['cecilia','instrumentos','partituras','empleo','comunidad'].forEach(b => {
-        let el = document.getElementById('bloque-'+b);
-        if (el) el.style.display = (b===bloque ? 'flex':'none');
-        let nav = document.getElementById('nav-'+b);
-        if(nav) nav.classList.toggle('active', b===bloque);
-        // --- SOLO PARA BLOQUE INSTRUMENTOS (TIENDA OVERLAY) ---
-        if(b==="instrumentos" && el) {
-          let c = el.querySelector('.wa-central-content');
-          if(c) {
-            c.innerHTML = `<iframe class="wa-tienda-iframe" src="https://tiendathomannemiweb.vercel.app/" style="border:none;border-radius:12px;margin:0;display:block;background:#fff;box-shadow:0 2px 9px #ede6c4;"></iframe>`;
-            c.classList.remove("tiene-mensajes");
-            document.getElementById('reset-instrumentos-btn').classList.remove('active');
-          }
-        } else if (b!=='cecilia' && el) {
-          let c = el.querySelector('.wa-central-content');
-          if(c) c.innerHTML = "";
-        }
-      });
-      cerrarPerfil();
-      mostrarEjemplos('usuarios');
+  // 1) Mostrar/ocultar bloques y actualizar estado de nav-btns
+  ['cecilia','instrumentos','partituras','empleo','comunidad'].forEach(b => {
+    const el = document.getElementById('bloque-'+b);
+    if (el) el.style.display = (b===bloque ? 'flex':'none');
+    const nav = document.getElementById('nav-'+b);
+    if (nav) nav.classList.toggle('active', b===bloque);
+
+    // --- SOLO PARA BLOQUE INSTRUMENTOS (TIENDA OVERLAY) ---
+    if (b==="instrumentos" && el) {
+      const c = el.querySelector('.wa-central-content');
+      if (c) {
+        c.innerHTML = `<iframe class="wa-tienda-iframe"
+            src="https://tiendathomannemiweb.vercel.app/"
+            style="border:none;border-radius:12px;margin:0;display:block;
+                   background:#fff;box-shadow:0 2px 9px #ede6c4;"></iframe>`;
+        c.classList.remove("tiene-mensajes");
+        document.getElementById('reset-instrumentos-btn')
+                .classList.remove('active');
+      }
+    } else if (b!=='cecilia' && el) {
+      const c = el.querySelector('.wa-central-content');
+      if (c) c.innerHTML = "";
     }
+  });
+
+  // 2) Lógica extra por bloque (instrumentos, etc.)
+  //    (aquí puedes renderizar promociones, limpiar formularios...)
+
+  // 3) En móvil, centrar el bloque activo en el carrusel
+  if (window.matchMedia('(max-width: 900px)').matches) {
+    const bloqueActivo = document.getElementById('bloque-'+bloque);
+    if (bloqueActivo) {
+      bloqueActivo.scrollIntoView({
+        behavior: 'smooth',
+        inline:   'center',  // o 'start' para alinear a la izquierda
+        block:    'nearest'
+      });
+    }
+  }
+
+  // 4) Restaurar resto de la UI
+  cerrarPerfil();
+  mostrarEjemplos('usuarios');
+}
+
     // Enter para enviar, Shift+Enter para salto de línea
     document.addEventListener('DOMContentLoaded', () => {
   // ya tenías estos…

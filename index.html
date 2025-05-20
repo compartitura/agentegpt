@@ -639,11 +639,71 @@
     right: 0;
     overflow-y: auto;
   }
+@media (max-width: 900px) {
+  /* Contenedor relativo para central y sidebars */
+  .wa-central, .wa-sidebar, .wa-right {
+    position: relative;
+  }
 
-  /* Asegura que el iframe llene su contenedor ajustado */
-  #bloque-instrumentos .wa-tienda-iframe {
-    height: 100%;
+  /* Asegurar que el contenido central esté por encima del chat de Cecilia */
+  .wa-central {
+    z-index: 10;
+  }
+
+  /* Ocultar headers */
+  .wa-central-header,
+  .wa-sidebar-titulo,
+  .wa-right-header {
+    display: none !important;
+  }
+
+  /* Ajuste de padding-top para no tapar contenido con tabs */
+  .wa-central,
+  .wa-sidebar,
+  .wa-right {
+    padding-top: 40px; /* altura aproximada de .block-tabs */
+  }
+
+  /* Altura de contenido central ajustada tras ocultar headers */
+  .wa-central-content {
+    height: calc(100vh - 64px - 40px); /* chat-bar (64px) + tabs (40px) */
+    overflow-y: auto;
+  }
+
+  /* Mostrar tabs en todas las columnas bajo el header (que ahora oculto) */
+  .block-tabs {
+    display: none;
+  }
+  /* Sidebar izquierdo y derecho */
+  .wa-sidebar .block-tabs,
+  .wa-right .block-tabs,
+  /* Bloque central */
+  .wa-central .block-tabs {
+    display: flex !important;
+    justify-content: space-around;
+    gap: 8px;
+    background: var(--primario);
+    padding: 6px 0;
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
+    z-index: 20; /* elevado para superponer a Cecilia */
+  }
+
+  .block-tabs .tab-btn {
+    flex: 1;
+    background: var(--primario);
+    color: #fff;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    padding: 6px 0;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+  }
+  .block-tabs .tab-btn.active {
+    border-color: var(--acento);
   }
 }
 
@@ -704,6 +764,11 @@
 
     <!-- SIDEBAR IZQUIERDA -->
     <aside class="wa-sidebar">
+<div class="block-tabs">
+  <button class="tab-btn active">2ª mano</button>
+  <button class="tab-btn">Instrumentos</button>
+  <button class="tab-btn">Promociones</button>
+</div>
       <div class="wa-sidebar-titulo">Compartitura</div>
       <div class="wa-sidebar-search">
         <svg viewBox="0 0 24 24" fill="none">
@@ -977,6 +1042,11 @@
     </div>
     <!-- Columna derecha -->
     <aside class="wa-right">
+<div class="block-tabs">
+  <button class="tab-btn">2ª mano</button>
+  <button class="tab-btn">Instrumentos</button>
+  <button class="tab-btn active">Promociones</button>
+</div>
       <div class="wa-right-header" id="wa-right-header">Novedades</div>
       <div class="wa-right-content" id="wa-right-content">
         <div class="wa-item">Info relevante para prueba</div>

@@ -1,4 +1,3 @@
-/* Variables de color y fuentes */
 :root {
   --primario: #888786;
   --secundario: #F5F0E6;
@@ -8,19 +7,17 @@
   --texto: #212121;
   --sidebar-width: 320px;
 }
-
-/* Reseteo básico */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { height: 100%; width: 100%; }
-body { font-family: ui-sans-serif, system-ui, "Segoe UI", Helvetica, Arial, sans-serif; background: var(--fondo); color: var(--texto); overflow: hidden; }
-
-/* Layout principal */
+body {
+  font-family: ui-sans-serif, system-ui, "Segoe UI", Helvetica, Arial, sans-serif;
+  background: var(--fondo);
+  color: var(--texto);
+}
 .wa-layout { display: flex; height: 100vh; width: 100vw; overflow-x: auto; scroll-snap-type: x mandatory; }
 .wa-sidebar, .wa-main, .wa-right { width: var(--sidebar-width); background: var(--secundario); display: flex; flex-direction: column; scroll-snap-align: start; }
 .wa-main { flex: 1; display: flex; scroll-snap-align: start; }
 .wa-central { flex: 1; display: flex; flex-direction: column; background: #fff; margin: 16px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); position: relative; scroll-snap-align: start; }
-
-/* Headers */
 .wa-header { display: flex; align-items: center; justify-content: space-between; padding: 16px; background: var(--secundario); border-bottom: 1px solid #e0e0e0; position: relative; }
 .wa-logo { height: 28px; }
 .wa-title { font-size: 18px; font-weight: 700; color: var(--primario); flex: 1; margin-left: 12px; }
@@ -28,30 +25,40 @@ body { font-family: ui-sans-serif, system-ui, "Segoe UI", Helvetica, Arial, sans
 .wa-menu-dropdown { display: none; position: absolute; top: 56px; right: 16px; background: #fff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); list-style: none; padding: 8px 0; z-index: 100; }
 .wa-menu-dropdown li { padding: 8px 16px; cursor: pointer; white-space: nowrap; }
 .wa-menu-dropdown li:hover { background: #f2f2f2; }
-
-/* Central content */
 .wa-central-content { flex: 1; overflow-y: auto; padding: 16px; background: #fdfdfd; }
 .wa-bubble { display: flex; align-items: center; max-width: 70%; margin-bottom: 12px; padding: 10px 14px; border-radius: 16px; line-height: 1.4; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
 .wa-bubble.user { background: #f0f0f0; color: var(--texto); margin-left: auto; }
 .wa-bubble.cecilia { background: #fff; color: var(--texto); }
+.wa-bubble.cecilia.wide {
+  max-width: 100% !important;
+  width: 100% !important;
+  align-self: stretch !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  margin-bottom: 0 !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  position: static !important;
+  left: unset !important;
+  right: unset !important;
+  top: unset !important;
+  transform: none !important;
+  z-index: unset !important;
+}
 .wa-bubble-icon { width: 24px; height: 24px; border-radius: 50%; margin-right: 8px; }
-
-/* Footer chat */
-.wa-central-footer { position: absolute; bottom: 0; left: 0; width: 100%; display: flex; align-items: center; padding: 12px 16px; background: #fff; border-top: 1px solid #e0e0e0; z-index: 500; }
+.wa-central-footer { position: fixed; bottom: 0; left: 0; width: 100%; display: flex; align-items: center; padding: 12px 16px; background: #fff; border-top: 1px solid #e0e0e0; z-index: 500; }
 .wa-icon-cecilia { cursor: pointer; margin-right: 8px; }
 .wa-icon-cecilia img { width: 32px; height: 32px; border-radius: 50%; }
 .wa-input-wrap { flex: 1; }
 .wa-input-wrap textarea { width: 100%; border: 1px solid #ccc; border-radius: 20px; padding: 10px 14px; font-size: 15px; resize: none; }
 .wa-btn-send { background: none; border: none; cursor: pointer; margin-left: 8px; }
-
-/* Typing indicator */
 .typing-dot { display: inline-block; width: 6px; height: 6px; margin: 0 2px; background-color: var(--texto); border-radius: 50%; opacity: 0; animation: blink 1s infinite; }
 .typing-dot:nth-child(1) { animation-delay: 0s; }
 .typing-dot:nth-child(2) { animation-delay: 0.2s; }
 .typing-dot:nth-child(3) { animation-delay: 0.4s; }
 @keyframes blink { 0%, 80%, 100% { opacity: 0; } 40% { opacity: 1; } }
-
-/* Mobile navigation buttons */
 .nav-btn { display: none; position: fixed; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.2); color: var(--primario); border: none; border-radius: 50%; width: 32px; height: 32px; font-size: 20px; line-height: 32px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.2); transition: background 0.2s, transform 0.2s; z-index: 1000; }
 .nav-btn.left { left: 8px; }
 .nav-btn.right { right: 8px; }
@@ -63,15 +70,12 @@ body { font-family: ui-sans-serif, system-ui, "Segoe UI", Helvetica, Arial, sans
   .wa-central-content { padding-bottom: 60px; }
   .nav-btn { display: block; }
 }
-
-/* Listado vertical de productos estilo Thomann */
 .cecilia-lista {
   display: flex;
   flex-direction: column;
   gap: 0;
   width: 100%;
 }
-
 .cecilia-lista-item {
   display: flex;
   flex-direction: row;
@@ -105,6 +109,7 @@ body { font-family: ui-sans-serif, system-ui, "Segoe UI", Helvetica, Arial, sans
   display: flex;
   flex-direction: column;
   min-width: 0;
+  gap: 0;
 }
 .cecilia-lista-title {
   font-size: 15px;
@@ -128,12 +133,35 @@ body { font-family: ui-sans-serif, system-ui, "Segoe UI", Helvetica, Arial, sans
   color: #297b0c;
   font-weight: bold;
 }
-.wa-bubble.cecilia.wide {
-  max-width: 100% !important;
-  width: 100% !important;
-  padding: 0 !important;
-  background: transparent !important;
-  box-shadow: none !important;
-  margin-bottom: 0 !important;
+.cecilia-breve {
+  font-size: 15px;
+  color: #355;
+  font-weight: 500;
+  margin-bottom: 8px;
+  margin-top: 2px;
+  padding: 0 2px;
 }
-
+.cecilia-btn-tienda {
+  display: block;
+  margin: 5px 0 0 0;
+  width: fit-content;
+  min-width: 86px;
+  max-width: 130px;
+  padding: 5px 16px;
+  background: #fff;
+  color: #212121;
+  border: 1.3px solid #bbb;
+  border-radius: 14px;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.13s, border 0.13s, color 0.13s;
+}
+.cecilia-btn-tienda:hover {
+  background: #f6f6f6;
+  border-color: #888;
+  color: #222;
+}

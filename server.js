@@ -1,12 +1,14 @@
 require('dotenv').config();
 const express = require("express");
 const cors = require("cors");
+const bodyParser = require("body-parser");
 const path = require("path");
 const { OpenAI } = require("openai");
 const products = require("./product.json");
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
+// Sinónimos español-inglés para búsqueda flexible
 const synonyms = {
   'saxofon': 'saxophone',
   'saxofón': 'saxophone',
@@ -28,6 +30,7 @@ const synonyms = {
   'trombón': 'trombone',
   'acústica': 'acoustic',
   'eléctrica': 'electric',
+  // ...agrega más si lo necesitas
 };
 
 const systemPrompt = `
@@ -47,27 +50,29 @@ function lookup_product(query) {
   const keywords = low.split(" ").filter(Boolean);
   const keywords_translated = keywords.map(kw => synonyms[kw] || kw);
 
+  // Coincidencia exacta
   const exact = products.find(
     p => `${p.Brand || ''} ${p.Model || ''}`.toLowerCase() === low
   );
   if (exact) {
     const name = `${exact.Brand} ${exact.Model}`;
+    // Lista para coincidencia exacta con badge
     return `
       <div class="cecilia-lista">
-        <div class="cecilia-breve">¡Este producto coincide exactamente con tu búsqueda!</div>
         <a class="cecilia-lista-item" href="${exact.affiliateURL}" target="_blank">
+          <div class="cecilia-lista-badge">¡Coincidencia exacta con tu petición!</div>
           <img class="cecilia-lista-img" src="${exact.ImageURL}" alt="${name}">
           <div class="cecilia-lista-body">
             <div class="cecilia-lista-title">${name}</div>
-            ${exact.Description ? `<div class="cecilia-lista-desc">${exact.Description}</div>` : ''}
-            ${exact.Price ? `<div class="cecilia-lista-price">${exact.Price}</div>` : ''}
-            <a href="${exact.affiliateURL}" target="_blank" class="cecilia-btn-tienda">Ir a la tienda</a>
+            <div class="cecilia-lista-desc">${exact.Description || ''}</div>
+            <div class="cecilia-lista-price">${exact.Price || ''}</div>
           </div>
         </a>
       </div>
     `;
   }
 
+  // Búsqueda de similitudes
   const sim = products
     .map(p => {
       const text = [p.Brand, p.Model, p.Description, p.CategoryTree]
@@ -82,9 +87,10 @@ function lookup_product(query) {
     .map(x => x.p);
 
   if (sim.length > 0) {
+    // Lista de productos similares con encabezado y límite a 3
     return `
       <div class="cecilia-lista">
-        <div class="cecilia-breve">He encontrado estos productos destacados que pueden interesarte:</div>
+        <div class="cecilia-lista-header">Destacados similares con tu petición</div>
         ${sim.slice(0, 3).map(p => {
           const name = `${p.Brand} ${p.Model}`;
           return `
@@ -94,7 +100,6 @@ function lookup_product(query) {
                 <div class="cecilia-lista-title">${name}</div>
                 ${p.Description ? `<div class="cecilia-lista-desc">${p.Description}</div>` : ''}
                 ${p.Price ? `<div class="cecilia-lista-price">${p.Price}</div>` : ''}
-                <a href="${p.affiliateURL}" target="_blank" class="cecilia-btn-tienda">Ir a la tienda</a>
               </div>
             </a>
           `;
@@ -103,6 +108,7 @@ function lookup_product(query) {
     `;
   }
 
+  // Nada encontrado
   return `
     <div class="cecilia-no-results">
       No encontré ningún producto que coincida con tu búsqueda.<br>
@@ -111,48 +117,56 @@ function lookup_product(query) {
   `;
 }
 
+
+
+
+
+
+
+
 const app = express();
 app.use(cors());
-app.use(express.json());
+app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname)));
 
 app.post("/chat", async (req, res) => {
-  try {
-    const msg = (req.body.message || "").trim();
-    const response = await openai.chat.completions.create({
-      model: "gpt-4.1",
-      messages: [
-        { role: "system", content: systemPrompt.trim() },
-        { role: "user",   content: msg }
-      ],
-      functions: [
-        {
-          name: "lookup_product",
-          description: "Busca un producto en product.json por cualquier campo relevante (marca, modelo, descripción, categoría) usando también sinónimos si es necesario.",
-          parameters: {
-            type: "object",
-            properties: {
-              query: { type: "string", description: "Texto de búsqueda del usuario" }
-            },
-            required: ["query"]
-          }
+  const msg = (req.body.message || "").trim();
+
+  const response = await openai.chat.completions.create({
+    model: "gpt-4.1",
+    messages: [
+      { role: "system", content: systemPrompt.trim() },
+      { role: "user",   content: msg }
+    ],
+    functions: [
+      {
+        name: "lookup_product",
+        description: "Busca un producto en product.json por cualquier campo relevante (marca, modelo, descripción, categoría) usando también sinónimos si es necesario.",
+        parameters: {
+          type: "object",
+          properties: {
+            query: { type: "string", description: "Texto de búsqueda del usuario" }
+          },
+          required: ["query"]
         }
-      ],
-      function_call: "auto"
-    });
-    const choice = response.choices[0];
-    if (choice.finish_reason === "function_call") {
-      const args = JSON.parse(choice.message.function_call.arguments);
-      const html = lookup_product(args.query);
-      return res.json({ reply: html });
-    }
-    const content = choice.message.content || "Lo siento, no tengo respuesta.";
-    return res.json({ reply: content });
-  } catch (err) {
-    return res.status(500).json({ reply: "Error interno al contactar a Cecilia" });
+      }
+    ],
+    function_call: "auto"
+  });
+
+  const choice = response.choices[0];
+  if (choice.finish_reason === "function_call") {
+    const args = JSON.parse(choice.message.function_call.arguments);
+    const html = lookup_product(args.query);
+    return res.json({ reply: html });
   }
+
+  // Fallback: respuesta directa para conversación/consejo
+  const content = choice.message.content || "Lo siento, no tengo respuesta.";
+  return res.json({ reply: content });
 });
 
+// Búsqueda JSON para autocomplete
 app.get("/products/search", (req, res) => {
   const q = (req.query.q || "").toLowerCase();
   const matches = products.filter(p =>
@@ -162,6 +176,7 @@ app.get("/products/search", (req, res) => {
   res.json({ products: matches });
 });
 
+// Estáticos
 app.use("/partituras", express.static(path.join(__dirname, "partituras")));
 
 const PORT = process.env.PORT || 3001;

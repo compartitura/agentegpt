@@ -237,7 +237,7 @@
   display: flex;
   align-items: center;
   padding: 12px 8px 12px 12px;
-  background: #fff;
+  background: var(--secundario);
   border-top: 1px solid #e0e0e0;
   z-index: 500;
   gap: 8px;
@@ -290,3 +290,35 @@
 }
 .nav-btn.left { left: 8px; }
 .nav-btn.right { right: 8px; }
+/* barra de iconos flotante */
+.wa-botonera {
+  position: fixed;
+  /* ajusta según suma de header + consultas */
+  top: 780px;
+  left: 0;
+  width: 100vw;
+  display: flex;
+  justify-content: space-around;
+  padding: 8px 12px;
+  background: var(--secundario);
+box-shadow: 0 -2px 4px var(--acento);
+  z-index: 450;
+}
+
+.botonera-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+.botonera-btn img {
+  width: 32px;   /* iconos más grandes */
+  height: 32px;
+}
+.botonera-btn.active {
+  opacity: 1;
+  filter: brightness(1.2);
+}
+

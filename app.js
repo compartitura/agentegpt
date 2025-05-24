@@ -117,3 +117,24 @@ async function enviarCecilia() {
     waChatEl.scrollTop = waChatEl.scrollHeight;
   }
 }
+// ——————————————————
+// navegación desde la barra de iconos
+// ——————————————————
+document.addEventListener('DOMContentLoaded', () => {
+  const layout = document.querySelector('.wa-layout');
+  const cols   = ['wa-extra-left','wa-left','wa-sidebar','wa-main','wa-right'];
+  const btns   = document.querySelectorAll('.botonera-btn');
+
+  btns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = document.querySelector('.' + btn.dataset.target);
+      if (target) target.scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+
+  layout.addEventListener('scroll', () => {
+    const idx = Math.round(layout.scrollLeft / window.innerWidth);
+    const activeCol = cols[idx];
+    btns.forEach(b => b.classList.toggle('active', b.dataset.target === activeCol));
+  });
+});

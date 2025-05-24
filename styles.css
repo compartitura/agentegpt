@@ -294,7 +294,7 @@
 .wa-botonera {
   position: fixed;
   /* ajusta según suma de header + consultas */
-  top: 767px;
+  top: 500px;
   left: 0;
   width: 100vw;
   display: flex;

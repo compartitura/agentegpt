@@ -254,7 +254,7 @@
   padding: 10px 14px;
   font-size: 15px;
   resize: none;
-  height: 42px;
+  height: 30px;
 }
 .wa-btn-send {
   background: none;
@@ -294,7 +294,7 @@
 .wa-botonera {
   position: fixed;
   /* ajusta según suma de header + consultas */
-  top: 700px;
+  top: 680px;
   left: 0;
   width: 100vw;
   display: flex;

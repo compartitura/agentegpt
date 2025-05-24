@@ -322,4 +322,17 @@ box-shadow: 0 -2px 4px var(--acento);
   filter: brightness(1.2);
 }
 
+/* Floating all header elements */
+header, .wa-header, .wa-central-header {
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: var(--secundario);
+  z-index: 500;
+}
+/* Ensure central content sits below the sticky header and above the footer */
+.wa-central-content {
+  padding-bottom: 800px;  /* reserva espacio para footer a 800px */
+}
 

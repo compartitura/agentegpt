@@ -111,7 +111,123 @@
   border-radius: 50%;
   margin-right: 8px;
 }
+/* Typing indicator */
+.typing-dot { display: inline-block; width: 6px; height: 6px; margin: 0 2px; background-color: var(--texto); border-radius: 50%; opacity: 0; animation: blink 1s infinite; }
+.typing-dot:nth-child(1) { animation-delay: 0s; }
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes blink { 0%, 80%, 100% { opacity: 0; } 40% { opacity: 1; } }
+/* Listado vertical de productos estilo Thomann */
+.cecilia-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: 100%;
+}
+.cecilia-lista-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  text-decoration: none;
+  background: none;
+  border: none;
+  padding: 8px 0;
+  border-bottom: 1px solid #ececec;
+  transition: background 0.12s;
+  cursor: pointer;
+  width: 100%;
+}
+.cecilia-lista-item:last-child {
+  border-bottom: none;
+}
+.cecilia-lista-item:hover {
+  background: #f9f9f9;
+}
+.cecilia-lista-img {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+  margin-right: 12px;
+  border-radius: 6px;
+  background: #fff;
+  border: 1px solid #eee;
+}
+.cecilia-lista-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.cecilia-lista-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #212121;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cecilia-lista-desc {
+  font-size: 13px;
+  color: #888;
+  margin-bottom: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cecilia-lista-price {
+  font-size: 15px;
+  color: #297b0c;
+  font-weight: bold;
+}
+/* Badge de coincidencia exacta en la parte alta de la tarjeta */
+.cecilia-lista-badge {
+  display: inline-block;
+  background-color: var(--acento);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 12px;
+  margin-bottom: 6px;
+  /* Ajuste de ancho para la burbuja */
+  min-width: 120px;
+  max-width: 80%;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
+/* Asegurarse de que el badge esté dentro de la tarjeta y centrado horizontalmente */
+.cecilia-lista-item {
+  position: relative;
+}
+.cecilia-lista-badge {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Ajuste de espaciado para que el badge no tape el contenido */
+.cecilia-lista-item .cecilia-lista-img,
+.cecilia-lista-item .cecilia-lista-body {
+  margin-top: 32px; /* Aumenta espacio para burbuja más ancha */
+}
+/* Badge para lista de similitudes al inicio del contenedor */
+.cecilia-lista > .cecilia-lista-badge {
+  display: block;
+  background-color: var(--acento);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 12px;
+  text-align: center;
+  margin: 0 auto 12px auto;
+  max-width: fit-content;
+}
 /* Footer chat */
 .wa-central-footer {
   position: fixed;

@@ -231,7 +231,7 @@
 /* Footer chat */
 .wa-central-footer {
   position: fixed;
-  bottom: 0;
+  bottom: 65px;
   left: 0;
   width: 100%;
   display: flex;
@@ -294,7 +294,7 @@
 .wa-botonera {
   position: fixed;
   /* ajusta según suma de header + consultas */
-  top: 500px;
+  top: 855px;
   left: 0;
   width: 100vw;
   display: flex;
@@ -321,4 +321,5 @@ box-shadow: 0 -2px 4px var(--acento);
   opacity: 1;
   filter: brightness(1.2);
 }
+
 

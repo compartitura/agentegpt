@@ -1,6 +1,6 @@
 /* Variables de color y fuentes */
 :root {
-  --primario: #888786;
+  --primario: #45413e
   --secundario: #F5F0E6;
   --acento: #83bea4;
   --acento2: #6b9784;
@@ -44,12 +44,12 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px;
+  padding: 2px;
   background: var(--secundario);
   border-bottom: 1px solid #e0e0e0;
   position: relative;
 }
-.wa-logo { height: 28px; }
+.wa-logo { height: 50px; }
 .wa-title { font-size: 18px; font-weight: 700; color: var(--primario); flex: 1; margin-left: 12px; }
 .wa-menu-btn {
   background: none;
@@ -82,7 +82,7 @@
 .wa-central-content {
   position: absolute;
   top: 56px;
-  height: calc(650px - 56px);
+  height: calc(620px - 56px);
   overflow-y: auto;
   width: 100%;
   padding: 16px;
@@ -301,7 +301,7 @@
   width: 100vw;
   display: flex;
   justify-content: space-around;
-  padding: 8px 12px;
+  padding: 2px 12px;
   background: var(--secundario);
 box-shadow: 0 -2px 4px var(--acento);
   z-index: 450;
@@ -316,11 +316,13 @@ box-shadow: 0 -2px 4px var(--acento);
   transition: opacity 0.2s;
 }
 .botonera-btn img {
-  width: 32px;   /* iconos más grandes */
-  height: 32px;
+  width: 50px;   /* iconos más grandes */
+  height: 50px;
 }
 .botonera-btn.active {
   opacity: 1;
   filter: brightness(1.2);
+  background: #f3731e;
+  border-radius: 20%;
 }
 

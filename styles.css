@@ -88,6 +88,16 @@
   padding: 16px;
   background: #fdfdfd;
 }
+.wa-central-content,
+#wa-chat-messages {
+  position: absolute;
+  top: 56px;
+  height: calc(650px - 56px);
+  overflow-y: auto;
+  width: 100%;
+  padding: 16px;
+  background: #fdfdfd;
+}
 .wa-bubble {
   display: flex;
   align-items: center;
@@ -325,4 +335,3 @@ box-shadow: 0 -2px 4px var(--acento);
   background: #f3731e;
   border-radius: 20%;
 }
-

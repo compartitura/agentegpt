@@ -92,7 +92,7 @@
 #wa-chat-messages {
   position: absolute;
   top: 56px;
-  height: calc(650px - 56px);
+  height: calc(600px - 56px);
   overflow-y: auto;
   width: 100%;
   padding: 16px;

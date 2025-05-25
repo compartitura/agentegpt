@@ -49,7 +49,7 @@
   border-bottom: 1px solid #e0e0e0;
   position: relative;
 }
-.wa-logo { height: 50px; }
+.wa-logo { height: 40px; }
 .wa-title { font-size: 18px; font-weight: 700; color: var(--primario); flex: 1; margin-left: 12px; }
 .wa-menu-btn {
   background: none;
